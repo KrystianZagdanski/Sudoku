@@ -1,0 +1,25 @@
+<!doctype html>
+<html>
+    <head>
+        <meta charset="UTF-8">
+        <title>Sudoku</title>
+        <script type="text/javascript" src="SolverTools.js"></script>
+        <script type="text/javascript" src="Solver.js"></script>
+        <script type="text/javascript" src="Structures.js"></script>
+        <script type="text/javascript" src="Board.js"></script>
+        <script type="text/javascript" src="main.js"></script>
+        <script type="text/javascript" src="save_load.js"></script>
+        <script type="text/javascript" src="controller.js"></script>
+        <link rel="stylesheet" href="style.css"/>
+    </head>
+    <body class="body-noise">
+        <div class="game">
+            <div id="SudokuDiv"></div>
+            <div id="buttons" style="display: block; margin-left: 10px;"></div>
+        </div>
+        <div id="funcButtonsDiv">
+            <input type="file" id="saveFile">
+            <button onclick="saveGame()">Save</button>
+        </div>
+    </body>
+</html>
