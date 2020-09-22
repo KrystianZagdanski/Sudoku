@@ -1,9 +1,12 @@
 //#region Cell
-/*
-    Represents single cell in sudoku
-*/
+
 class Cell
 {
+    /**
+     * Represents single cell in sudoku.
+     * @constructor
+     * @param  {number} id - Index of a cell.
+     */
     constructor(id)
     {
         // Public
@@ -18,7 +21,6 @@ class Cell
         this._candidates = [];       // Colection of numbers which might be solution
     }
 
-    // return candidates if cell have no value otherwise return empty array
     get candidates()
     {
         if(this.value)
@@ -27,7 +29,10 @@ class Cell
             return this._candidates;
     }
 
-    // add candidates if not in list already 
+    /**
+     * Add candidates to Cell.
+     * @param  {Array.<number> | number} candidates - Candidates you want to add.
+     */
     addCandidates(candidates)
     {
         if(Array.isArray(candidates))
@@ -45,64 +50,81 @@ class Cell
         }
     }
 
-    // set isGiven flag and value of that cell
-    given(number)
+    /**
+     * Set value of a Cell and isGiven flag.
+     * @param  {number} digit - Value of a cell.
+     */
+    given(digit)
     {
-        this.value = number;
+        this.value = digit;
         this.isGiven = true;
     }
 
-    // delete candidate from list
-    removeCandidate(value)
+    /**
+     * Remove candidate from Cell candidates.
+     * @param  {number} digit - Candidate to remove.
+     */
+    removeCandidate(digit)
     {
-        let index = this._candidates.indexOf(value);
+        let index = this._candidates.indexOf(digit);
         if(index != -1)
         {
             this._candidates.splice(index, 1);
         }
     }
 
-    // fill solution for this cell and remove this candidate from it's houses
-    solve(value)
+    /**
+     * Set Cell value and romove it from all houses of this Cell.
+     * @param  {number} digit - Solution for cell.
+     */
+    solve(digit)
     {
-        this.value = value;
+        this.value = digit;
         let cells = []; 
-        cells.push(this.row.findCandidate(value));
-        cells.push(this.column.findCandidate(value));
-        cells.push(this.block.findCandidate(value));
+        cells.push(this.row.findCandidate(digit));
+        cells.push(this.column.findCandidate(digit));
+        cells.push(this.block.findCandidate(digit));
         for(let i = 0; i < 3; i++)
         {
             cells[i].forEach(cell=>{
                 if(cell.id == this.id) return;
     
-                cell.removeCandidate(value);
+                cell.removeCandidate(digit);
             });
         }
-        
     }
 
-    // return types of common houses of this and given cell in array
-    commonHouse(cell)
+    /**
+     * Returns list of types of houses common with aCell.
+     * @param  {Cell} aCell - Cell to compare to.
+     * @returns {Array.<string>} "row" or "column" or "block".
+     */
+    commonHouse(aCell)
     {
         let type = [];
-        if(this.row == cell.row) type.push("row");
-        if(this.column == cell.column) type.push("column");
-        if(this.block == cell.block) type.push("block");
+        if(this.row == aCell.row) type.push("row");
+        if(this.column == aCell.column) type.push("column");
+        if(this.block == aCell.block) type.push("block");
         return type;
     }
 }
 //#endregion Cell
 
 //#region House
-/*
-    Represents row, column or block of 9 cells
-*/
+
 class House
 {
-    constructor(index)
+    /**
+     * Represents row or column or block of 9 cells in sudoku.
+     * @param  {number} id - Index of a House.
+     * @param {string} type - Type of a house: "row" or "column" or "block".
+     * @constructor
+     */
+    constructor(id, type)
     {
         this.cells = []; // list of cells within this house
-        this._index = index;
+        this._index = id;
+        this.type = type;
     }
 
     get index()
@@ -110,15 +132,16 @@ class House
         return this._index;
     }
 
-    addCell(cell, type)
+    /**
+     * Add Cell to House and House this House to cell.
+     * @param  {Cell} aCell - Cell to add to the House..
+     */
+    addCell(aCell)
     {
         if(this.cells.length < 9)
         {
-            if(type == "row") cell.row = this;
-            else if(type == "column") cell.column = this;
-            else if(type == "block") cell.block = this;
-            else console.error("Invalid or no type of House was specitied!");
-            this.cells.push(cell);
+            aCell[this.type] = this;
+            this.cells.push(aCell);
         }
         else
         {
@@ -126,7 +149,11 @@ class House
         }
     }
 
-    // return true if value already is in this house
+    /**
+     * Returns true if any cell in this House have given value.
+     * @param  {number} value - Value to look for.
+     * @returns {Boolean} True of False.
+     */
     valueInHouse(value)
     {
         let isIn = false;
@@ -141,7 +168,11 @@ class House
         return isIn;
     }
 
-    // return all cells containing given digit
+    /**
+     * Returns list of Cells containing given digit in candidates.
+     * @param  {number} digit - Candidate to find.
+     * @returns {Array.<Cell>}
+     */
     findCandidate(digit)
     {
         let cells = [];
@@ -151,7 +182,11 @@ class House
         return cells;
     }
 
-    // return count of given candidate in this house
+    /**
+     * Returns number of appearances of a candidate in this House.
+     * @param  {number} digit - Candidate.
+     * @returns {number} 0-9
+     */
     countCandidate(digit)
     {
         let count = 0;
@@ -162,7 +197,11 @@ class House
         return count;
     }
 
-    // removes given candidate from all cells in this house except cells in except paramiter
+    /**
+     * Remove candidate from house except specified cells.
+     * @param  {number} digit - Candidate.
+     * @param  {Array.<Cell> | Cell} [except] - Cells to ignore.
+     */
     removeCandidate(digit, except)
     {
         this.cells.forEach(cell=>{
@@ -181,7 +220,10 @@ class House
         });
     }
 
-    // return count of all candidates in house
+    /**
+     * Returns list of number of canidates in House.
+     * @returns {Array.<number>} [number_of_candidate_x,...]
+     */
     countAllCandidates()
     {
         let count = [];
@@ -197,12 +239,19 @@ class House
 //#region Candidate Object
 class CandidateObj
 {
+    /**
+     * Represents candidate in a Cell.
+     * @param  {Cell} aCell - Cell of a candidate.
+     * @param  {number} value - Digit, cnadidate.
+     */
     constructor(aCell, value)
     {
         this.cell = aCell;
         this.value = value;
     }
-
+    /**
+     * Remove this candidate from cell.
+     */
     remove()
     {
         this.cell.removeCandidate(this.value);
@@ -217,13 +266,22 @@ class CandidateObj
 */
 class PairObj
 {
+    /**
+     * Representation of two candidates creating a pair.(Only 2 digits in a cell or the same digit in 2 cells)
+     * @param  {Array.<Cell> | Cell} aCell - Cell or [Cell, Cell] creating pair.
+     * @param  {Array.<number> | number} values - [value, value] or value creating pair.
+     */
     constructor(aCell, values)
     {
         this.cell = aCell;
         this.value = values; 
     }
 
-    // return CandidateObj 
+    /**
+     * Returns first or second candidate as CandidateObj
+     * @param  {number} index - Index of cadidate (0 or 1).
+     * @returns {CandidateObj} CandidateObj
+     */
     getCandidateObj(index)
     {
         if(Array.isArray(this.cell))
@@ -244,6 +302,13 @@ class PairObj
 */
 class Link
 {
+    /**
+     * Pair of two linked CandidateObj.
+     * @param  {CandidateObj} aCandidateObjA - First CandidateObj.
+     * @param  {CandidateObj} aCandidateObjB - Second CandidateObj.
+     * @param  {Boolean} isWeak - Set to true if it's used as weak link.
+     * @constructor
+     */
     constructor(aCandidateObjA, aCandidateObjB, isWeak)
     {
         this.digitA = aCandidateObjA;
@@ -251,7 +316,10 @@ class Link
         this.isWeak = isWeak;
     }
 
-    // return true if link is strong
+    /**
+     * Returns true if link is strong.
+     * @returns {Boolean} true or false.
+     */
     isStrong()
     {
         if(this.digitA.cell == this.digitB.cell) // if candidates are in the same cell
@@ -288,15 +356,13 @@ class Link
 //#endregion Link
 
 //#region Chain
-/*
-    Chain is colection of alternating weak and strong links
-    Chain must have odd number of links to be correctly completed 
 
-    weak link: pair of numbers where there is more than 2 of them
-    strong link: pair of numbers where these are only one in cell or house
-*/
 class Chain
 {
+    /**
+     * Represents chain in sudoku. Odd number of Alternating weak and strong Links.
+     * @constructor
+     */
     constructor()
     {
         // Public
@@ -315,6 +381,11 @@ class Chain
     }
 
     // return true if given link can be next link of this chain
+    /**
+     * Returns true if given Link can be the next link in this Chain.
+     * @param  {Link} aLink - Link to check.
+     * @returns {Boolean} true or false.
+     */
     isValid(aLink)
     {
         if(this._strongLinkNext && aLink.isStrong())
@@ -323,7 +394,10 @@ class Chain
             return false;
     }
 
-    // add link at the end of the chain or throw an error if weak link is added instead of strong
+    /**
+     * Add link to the chain if Link is valid.
+     * @param  {Link} aLink - Link to add.
+     */
     push(aLink)
     {
         if(!this.isValid(aLink))
@@ -346,7 +420,9 @@ class Chain
         this.last = aLink.cellB; // set last cell
     }
 
-    // remove last link
+    /**
+     * Remove last Link.
+     */
     pop()
     {
         this.links.pop();

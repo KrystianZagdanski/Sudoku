@@ -38,7 +38,7 @@ function main()
     for(let x = 0; x < 9; x++)
     {
         cell[x] = [];
-        column[x] = new House(x);
+        column[x] = new House(x, "column");
         for(let y = 0; y < 9; y++)
         {
             // create cell
@@ -46,13 +46,13 @@ function main()
             // create row in first iteration
             if(x == 0)
             {
-                row[y] = new House(y);
+                row[y] = new House(y, "row");
             }
             // create block
             let blockIndex = Math.floor(x/3)+3*Math.floor(y/3);
             if(block[blockIndex] == undefined)
             {
-                block[blockIndex] = new House(blockIndex);
+                block[blockIndex] = new House(blockIndex, "block");
             }
 
             // add cells to houses

@@ -1,9 +1,20 @@
 class Solver
 {
+    static NAKED_SINGLE = Symbol(1);
+    static HIDDEN_SINGLES = Symbol(2);
+    static ELIMINATION_PAIR = Symbol(3);
+    static HIDDEN_DOUBLE = Symbol(4);
+    static TWO_PAIR_ELIMINATION = Symbol(5);
+    static X_WING = Symbol(6);
+    static FINNED_X_WING = Symbol(7);
+    
     //#region Hidden and Naked Singles
 
-    // return list containing CandidateObj which is nakedSingel
-    // return false if didn't found any
+    /**
+     * Returns list of naked single candidates of false if didn't found any.
+     * @param  {Array.<Array.<Cell>>} cells - Cells of sudoku.
+     * @returns {Array.<CandidateObj> | false} [CandidateObj,...] or false.
+     */
     static findNakedSingle(cells)
     {
         let nakedSingles = [];
@@ -18,8 +29,13 @@ class Solver
         else return nakedSingles;
     }
 
-    // return list containing CandidateObj which is hiddenSingle
-    // return false if didn't found any
+    /**
+     * Returns list of hidden single candidates of false if didn't found any.
+     * @param  {Array.<House>} rows - Rows of sudoku.
+     * @param  {Array.<House>} columns - Columns of sudoku.
+     * @param  {Array.<House>} blocks - Blocks of sudoku.
+     * @returns {Array.<CandidateObj> | false} [CandidateObj,...] or false.
+     */
     static findHiddenSingle(rows, columns, blocks)
     {
         let hiddenSingles = [];
@@ -59,6 +75,13 @@ class Solver
 
     // return list containing PairObj
     // return false if didn't found any
+    /**
+     * Returns list of pairs or false if didn't found any.
+     * @param  {Array.<House>} rows - Rows of sudoku.
+     * @param  {Array.<House>} columns - Columns of sudoku.
+     * @param  {Array.<House>} blocks - Blocks of sudoku.
+     * @returns {Array.<PairObj> | false} [PairObj,...] or false.
+     */
     static findHiddenPairs(rows, columns, blocks)
     {
         let hiddenPairs = [];
@@ -111,12 +134,11 @@ class Solver
 
     //#region Double
 
-    /*
-        find and return hidden double
-        (pair of two digits in the same cells which are the only one in block but have another digit(s) in it's cell)
-        return list of PairObj
-        return false id didn't found any
-    */
+    /**
+     * Returns hidden double as list of objects or false if didn't found any.
+     * @param  {Array.<House>} blocks - Blocks of sudoku.
+     * @returns {Array.<Object> | false} [{pair1: PairObj, pair2: PairObj},...] or false.
+     */
     static findHiddenDouble(blocks)
     {
         let hiddenDouble = [];
@@ -159,8 +181,11 @@ class Solver
 
     //#region Two Pairs
 
-    // return list containing PairObj
-    // return false if didn't found any
+    /**
+     * Returns list of pairs or false.
+     * @param  {Array.<Array.<Cell>>} cells - Cells of sudoku.
+     * @returns {Array.<PairObj> | flase} [PairObj,...] or false.
+     */
     static findTwoDigitCells(cells)
     {
         let twoDigitCells = [];
@@ -175,7 +200,11 @@ class Solver
         else return twoDigitCells;
     }
 
-    // return list of 2 PairObj [[PairObj,PairObj],...]
+    /**
+     * Returns list of lists of two PairObj or false.
+     * @param  {Array.<Array.<Cell>>} cells - Cells of sudoku.
+     * @returns {Array.<Array<PairObj>> | false} [[PairObj, PairObj],...] or false.
+     */
     static findTwoPairs(cells)
     {
         let twoDigitCells = Solver.findTwoDigitCells(cells);
@@ -202,9 +231,14 @@ class Solver
 
     //#region X-Wing
 
-    // TODO: X-Wing with missing candidates
+    // TODO: X-Wing with missing candidates, X-Wing with missing candidates and fins
 
-    // returns x wings as list of {p1: PairObj, p2: PairObj, house: HouseType}
+    /**
+     * Returns x wings as list of objects or false.
+     * @param  {Array.<House>} rows - Rows of sudoku.
+     * @param  {Array.<House>} columns - Columns of sudoku.
+     * @returns {Array.<Object> | false} [{p1: PairObj, p2: PairObj, house: HouseType},...] or false.
+     */
     static findXWing(rows, columns)
     {
         let xWings = [];
@@ -263,7 +297,12 @@ class Solver
         else return xWings;
     }
 
-     // returns x wings as list of {p1: PairObj, p2: PairObj, house: HouseType, fin: []}
+     /**
+      * Returns finned X-wings as list of objects or false.
+      * @param  {Array.<House>} rows - Rows of sudoku.
+      * @param  {Array.<House>} columns - Columns of sudoku.
+      * @returns {Array.<Object> | false} [{p1: PairObj, p2: PairObj, house: HouseType, fin: []},...] or false.
+      */
      static findFinnedXWing(rows, columns)
      {
          let xWings = [];
@@ -362,59 +401,64 @@ class Solver
      }
 
      // return x wings with missing candidate as list of {p1: PairObj, p2: PairObj, house: HouseType}
-     static findImperfectXWing(rows, columns)
+     static findImperfectXWing(rows, columns) // TODO
      {
         let xWings = [];
-        let xWingCandidates = [[],[],[],[],[],[],[],[],[]];
+        let xWingCandidatesInRow = [[],[],[],[],[],[],[],[],[]];
+        let xWingCandidatesInColumn = [[],[],[],[],[],[],[],[],[]];
         let candidates;
         
-        // find Pairs that might be part of x wing
+        // find candidates that might be part of x wing
         for(let i = 0; i < 9; i++)
         {
             for(let digit = 1; digit <= 9; digit++)
             {
-                // add pairs to xWingCandidates list excluding pairs in the same block (they should be solved by diferent method)
+                // add Pairs to xWingCandidates list
                 candidates = rows[i].findCandidate(digit);
                 if(candidates.length == 2 && !candidates[0].commonHouse(candidates[1]).includes("block"))
-                {
-                    xWingCandidates[digit-1].push(new PairObj([candidates[0], candidates[1]], digit));
-                }
-                candidates = columns[i].findCandidate(digit);
-                if(candidates.length == 2 && !candidates[0].commonHouse(candidates[1]).includes("block"))
-                {
-                    xWingCandidates[digit-1].push(new PairObj([candidates[0], candidates[1]], digit));
-                }
+               {
+                   xWingCandidatesInRow[digit-1].push(new PairObj([candidates[0], candidates[1]], digit));
+               }
+               candidates = columns[i].findCandidate(digit);
+               if(candidates.length == 2 && !candidates[0].commonHouse(candidates[1]).includes("block"))
+               {
+                   xWingCandidatesInColumn[digit-1].push(new PairObj([candidates[0], candidates[1]], digit));
+               }
             }
         }
-        // find x wing
-        xWingCandidates.forEach(PairList=>{
-            if(PairList.length < 2) return;
-            
-            for(let i = 0; i < PairList.length-1; i++)
-            {
-                for(let j = i+1; j < PairList.length; j++)
-                {
-                    let oryginalHouse = PairList[i].cell[0].commonHouse(PairList[i].cell[1]);
-                    let comHouse1 = PairList[i].cell[0].commonHouse(PairList[j].cell[0]);
-                    let comHouse2 = PairList[i].cell[1].commonHouse(PairList[j].cell[1]);
-                    if(oryginalHouse.includes("row") && comHouse1.includes("column") && comHouse2.includes("column"))
-                    {
-                        xWings.push({
-                            p1: PairList[i],
-                            p2: PairList[j],
-                            house: "row"
-                        });
-                    }
-                    if(oryginalHouse.includes("column") && comHouse1.includes("row") && comHouse2.includes("row"))
-                    {
-                        xWings.push({
-                            p1: PairList[i],
-                            p2: PairList[j],
-                            house: "column"
-                        });
-                    }
-                }
-            }
+        // find finned x wing with candidates in rows 
+        xWingCandidatesInRow.forEach(PairList=>{
+           if(PairList.length == 0) return;
+           
+           PairList.forEach(aPair=>{
+               // find matching pair to cemplete x wing
+               aPair.cell[0].column.findCandidate(aPair.value).forEach(cell=>{
+                   let candidatesForSecoundPair = cell.row.findCandidate(aPair.value);
+                   if(candidatesForSecoundPair.length < 3 || candidatesForSecoundPair.length > 4) return;
+                   let pairCells = [];
+                   let fins = [];
+                   candidatesForSecoundPair.forEach(cFSP=>{
+                       if(cFSP.commonHouse(aPair.cell[0]).includes("column") || cFSP.commonHouse(aPair.cell[1]).includes("column"))
+                       {
+                           pairCells.push(cFSP);
+                       }
+                       else
+                       {
+                           fins.push(cFSP);
+                       }
+                   });
+                   if(pairCells.length < 2 || fins.length == 0) return;
+                   // make sure both fins are in the same block as only one of the cells in pair 
+                   if( !(fins[0].commonHouse(pairCells[0]).includes("block") || fins[0].commonHouse(pairCells[1]).includes("block")) ) return;
+                   if(fins.length == 2)
+                   {
+                       if(!fins[0].commonHouse(fins[1]).includes("block")) return;
+                   }
+                   let secoundPair = new PairObj(pairCells, aPair.value);
+                   xWings.push({p1: aPair, p2: secoundPair, house: "row", fin: fins});
+               });
+               
+           });
         });
         if(xWings.length == 0) return false;
         else return xWings;
@@ -424,6 +468,14 @@ class Solver
     //#region Links
 
     // return object with lists of strong links {LinksFromPairs: [], LinksFrom2DigitCell: []}
+    /**
+     * Returns object with lists of strong links.
+     * @param  {Array.<Array.<Cell>>} cells - Cells of sudoku.
+     * @param  {Array.<House>} rows - Rows of sudoku.
+     * @param  {Array.<House>} columns - Columns of sudoku.
+     * @param  {Array.<House>} blocks - Blocks of sudoku.
+     * @returns {Object<Array.<Link>, Array.<Link>>} {LinksFromPairs: [Link,...], LinksFrom2DigitCell: [Link,...]}
+     */
     static findAllStrongLinks(cells, rows, columns, blocks)
     {
         let links = {

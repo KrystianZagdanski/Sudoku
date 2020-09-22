@@ -3,7 +3,10 @@
 */
 //#region methods + solutions
 
-// fill all posible candidates in every cell
+/**
+ * Fill all posible candidates in every cell.
+ * @param  {Array.<Array.<Cell>>} cells - Cells of sudoku.
+ */
 Solver.fillAllCandidates = (cells)=>{
     cells.forEach(col =>{
         col.forEach(cell =>{
@@ -19,14 +22,17 @@ Solver.fillAllCandidates = (cells)=>{
     });
 }
 
-// highlights naked singles (method code 1)
+/**
+ * Highlights naked singles.
+ * @returns {Symbol | false} Solver.NAKED_SINGLE or false;
+ */
 Solver.showNakedSingles = ()=>{
     Solver.nakedSingles = Solver.findNakedSingle(cell);
     if(Solver.nakedSingles)
     {
         Solver.nakedSingles.forEach(obj=>{board.addHighlight(obj);});
         console.log("Naked Single (Code 1)");
-        return 1;
+        return Solver.NAKED_SINGLE;
     }
     return false;
 }
@@ -44,7 +50,7 @@ Solver.showHiddenSingles = ()=>{
     {
         Solver.hiddenSinges.forEach(obj=>{board.addHighlight(obj);});
         console.log("Hidden Single (Code 2)");
-        return 2;
+        return Solver.HIDDEN_SINGLES;
     }
     return false;
 }
@@ -93,7 +99,7 @@ Solver.showEliminationPairs = ()=>{
     if(Solver.candidatesToRemove.length > 0)
     {
         console.log("Elimination Pair (Code 3)");
-        return 3;
+        return Solver.ELIMINATION_PAIR;
     }
     return false;
 }
@@ -136,7 +142,7 @@ Solver.showHiddenDoubles = ()=>{
             board.addHighlight(double.pair2.getCandidateObj(1));
         });
         console.log("Double (Code 4)");
-        return 4;
+        return Solver.HIDDEN_DOUBLE;
     }
     return false;
 }
@@ -203,7 +209,7 @@ Solver.showTwoPairElimination = ()=>{
     if(Solver.candidatesToRemove.length > 0)
     {
         console.log("Two Pair Elimination (Code 5)");
-        return 5;
+        return Solver.TWO_PAIR_ELIMINATION;
     }
     return false;
 }
@@ -320,7 +326,7 @@ Solver.showXWing = ()=>{
     if(Solver.candidatesToRemove.length > 0)
     {
         console.log("X-Wing (Code 6)");
-        return 6;
+        return Solver.X_WING;
     }
     return false;
 }
@@ -391,7 +397,7 @@ Solver.showFinnedXWing = ()=>{
     if(Solver.candidatesToRemove.length > 0)
     {
         console.log("Finned X-Wing (Code 7)");
-        return 7;
+        return Solver.FINNED_X_WING;
     }
     return false;
 }
@@ -429,25 +435,25 @@ Solver.step = ()=>{
     {
         switch(Solver.methodCode)
         {
-            case 1:
+            case Solver.NAKED_SINGLE:
                 Solver.solveNakedSingles();
                 break;
-            case 2:
+            case Solver.HIDDEN_SINGLES:
                 Solver.solveHiddenSingles();
                 break;
-            case 3:
+            case Solver.ELIMINATION_PAIR:
                 Solver.removeEliminationPairsCandidates();
                 break;
-            case 4:
+            case Solver.HIDDEN_DOUBLE:
                 Solver.removeDoubleEmininationCandidates();
                 break;
-            case 5:
+            case Solver.TWO_PAIR_ELIMINATION:
                 Solver.removeTwoPairEliminationCandidates();
                 break;
-            case 6:
+            case Solver.X_WING:
                 Solver.removeXWingCandidates();
                 break;
-            case 7:
+            case Solver.FINNED_X_WING:
                 Solver.removeFinnedXWingCandidates();
                 break;
             default:
