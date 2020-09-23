@@ -256,6 +256,13 @@ class CandidateObj
     {
         this.cell.removeCandidate(this.value);
     }
+    /**
+     * Use this candidate to solve cell.
+     */
+    setAsSolution()
+    {
+        this.cell.solve(this.value);
+    }
 }
 //#endregion Candidate Object
 

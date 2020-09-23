@@ -4,6 +4,25 @@
 //#region methods + solutions
 
 /**
+ * Solve cells with candidates from Solver.solutions.
+ */
+Solver.solveCells = ()=>{
+    if(Solver.solutions.length == 0) return;
+    
+    Solver.solutions.forEach(cObj=>{cObj.setAsSolution()});
+    Solver.solutions = [];
+}
+/**
+ * Remove candidates from cells.
+ */
+Solver.removeCandidates = ()=>{
+    if(Solver.candidatesToRemove.length == 0) return;
+
+    Solver.candidatesToRemove.forEach(cObj=>{cObj.remove()});
+    Solver.candidatesToRemove = [];
+}
+
+/**
  * Fill all posible candidates in every cell.
  * @param  {Array.<Array.<Cell>>} cells - Cells of sudoku.
  */
@@ -24,44 +43,40 @@ Solver.fillAllCandidates = (cells)=>{
 
 /**
  * Highlights naked singles.
- * @returns {Symbol | false} Solver.NAKED_SINGLE or false;
+ * @returns {Symbol | false} Solver.SOLVE or false.
  */
 Solver.showNakedSingles = ()=>{
-    Solver.nakedSingles = Solver.findNakedSingle(cell);
-    if(Solver.nakedSingles)
+    let nakedSingles = Solver.findNakedSingle(cell);
+    if(nakedSingles)
     {
-        Solver.nakedSingles.forEach(obj=>{board.addHighlight(obj);});
-        console.log("Naked Single (Code 1)");
-        return Solver.NAKED_SINGLE;
+        nakedSingles.forEach(obj=>{board.addHighlight(obj);});
+        Solver.solutions = nakedSingles;
+        console.log("Naked Single");
+        return Solver.SOLVE;
     }
     return false;
 }
 
-// solve naked singles (method code 1 solution)
-Solver.solveNakedSingles = ()=>{
-    if(Solver.nakedSingles)
-        Solver.nakedSingles.forEach(obj=>{obj.cell.solve(obj.value)});
-}
-
-// highlight hidden singles (method code 2)
+/**
+ * Highlights hidden singles.
+ * @returns {Symbol | false} Solver.SOLVE or false.
+ */
 Solver.showHiddenSingles = ()=>{
-    Solver.hiddenSinges = Solver.findHiddenSingle(row, column, block);
-    if(Solver.hiddenSinges)
+    let hiddenSinges = Solver.findHiddenSingle(row, column, block);
+    if(hiddenSinges)
     {
-        Solver.hiddenSinges.forEach(obj=>{board.addHighlight(obj);});
-        console.log("Hidden Single (Code 2)");
-        return Solver.HIDDEN_SINGLES;
+        hiddenSinges.forEach(obj=>{board.addHighlight(obj);});
+        Solver.solutions = hiddenSinges;
+        console.log("Hidden Single");
+        return Solver.SOLVE;
     }
     return false;
 }
 
-// solve hidden singles (method code 2 solution)
-Solver.solveHiddenSingles = ()=>{
-    if(Solver.hiddenSinges)
-        Solver.hiddenSinges.forEach(obj=>{obj.cell.solve(obj.value)});
-}
-
-// highlight pairs and candidates to eliminate (method code 3)
+/**
+ * Highlights pairs and candidates eliminated by this pairs.
+ * @returns {Symbol | false} Solver.REMOVE or false.
+ */
 Solver.showEliminationPairs = ()=>{
     let pairs = Solver.findHiddenPairs(row, column, block);
     if(!pairs) return;
@@ -98,41 +113,37 @@ Solver.showEliminationPairs = ()=>{
     });
     if(Solver.candidatesToRemove.length > 0)
     {
-        console.log("Elimination Pair (Code 3)");
-        return Solver.ELIMINATION_PAIR;
+        console.log("Elimination Pair");
+        return Solver.REMOVE;
     }
     return false;
 }
 
-// remove eliminated candidates from elimination pairs (method code 3 solution)
-Solver.removeEliminationPairsCandidates = ()=>{
-    if(Solver.candidatesToRemove.length == 0) return;
-
-    Solver.candidatesToRemove.forEach(cadidateObj=>{
-        cadidateObj.remove();
-    });
-
-    Solver.candidatesToRemove = [];
-    Solver.emininationPairs = [];
-}
-
-// highlight double elimination (method code 4)
+/**
+ * Highlights 2 pairs in the same block and candidates eliminated by them.
+ * @returns {Symbol | false} Solver.REMOVE or false.
+ */
 Solver.showHiddenDoubles = ()=>{
-    Solver.hiddenDoubles = Solver.findHiddenDouble(block);
-    if(Solver.hiddenDoubles)
+    hiddenDoubles = Solver.findHiddenDouble(block);
+    if(hiddenDoubles)
     {
-        Solver.hiddenDoubles.forEach(double=>{
+        Solver.candidatesToRemove = [];
+        hiddenDoubles.forEach(double=>{
             // highlight candidates for elimination
             double.pair1.cell[0].candidates.forEach(candidate=>{
                 if(candidate != double.pair1.value && candidate != double.pair2.value)
                 {
-                    board.addHighlight(new CandidateObj(double.pair1.cell[0], candidate), "red");
+                    let c = new CandidateObj(double.pair1.cell[0], candidate);
+                    board.addHighlight(c, "red");
+                    Solver.candidatesToRemove.push(c);
                 }
             });
             double.pair1.cell[1].candidates.forEach(candidate=>{
                 if(candidate != double.pair1.value && candidate != double.pair2.value)
                 {
-                    board.addHighlight(new CandidateObj(double.pair1.cell[1], candidate), "red");
+                    let c = new CandidateObj(double.pair1.cell[1], candidate);
+                    board.addHighlight(c, "red");
+                    Solver.candidatesToRemove.push(c);
                 }
             });
             // highlight double
@@ -141,29 +152,16 @@ Solver.showHiddenDoubles = ()=>{
             board.addHighlight(double.pair2.getCandidateObj(0));
             board.addHighlight(double.pair2.getCandidateObj(1));
         });
-        console.log("Double (Code 4)");
-        return Solver.HIDDEN_DOUBLE;
+        console.log("Double");
+        return Solver.REMOVE;
     }
     return false;
 }
 
-// remove other candidates from double elimination cells (method code 4 solution)
-Solver.removeDoubleEmininationCandidates = ()=>{
-    if(!Solver.hiddenDoubles) return;
-
-    Solver.hiddenDoubles.forEach(double=>{
-        for(let digit = 1; digit <= 9; digit++)
-        {
-            if(digit != double.pair1.value && digit != double.pair2.value)
-            {
-                double.pair1.cell[0].removeCandidate(digit);
-                double.pair1.cell[1].removeCandidate(digit);
-            }
-        }
-    });
-}
-
-// highlight two pair elimination (method code 5)
+/**
+ * Highlights 2 pairs in the same row or column and candidates eliminated by them.
+ * @returns {Symbol | false} Solver.REMOVE or false.
+ */
 Solver.showTwoPairElimination = ()=>{
     let twoPairs = Solver.findTwoPairs(cell);
     if(!twoPairs) return;
@@ -208,25 +206,16 @@ Solver.showTwoPairElimination = ()=>{
     });
     if(Solver.candidatesToRemove.length > 0)
     {
-        console.log("Two Pair Elimination (Code 5)");
-        return Solver.TWO_PAIR_ELIMINATION;
+        console.log("Two Pair Elimination");
+        return Solver.REMOVE;
     }
     return false;
 }
 
-// remove eliminated candidates from two pair elimination (method code 5 solution)
-Solver.removeTwoPairEliminationCandidates = ()=>{
-    if(Solver.candidatesToRemove.length == 0) return;
-
-    Solver.candidatesToRemove.forEach(cadidateObj=>{
-        cadidateObj.remove();
-    });
-
-    Solver.candidatesToRemove = [];
-    Solver.emininationPairs = [];
-}
-
-// highlight X-Wing (method code 6)
+/**
+ * Highlights X-Wing its houses and candidates eliminated by it.
+ * @returns {Symbol | false} Solver.REMOVE or false.
+ */
 Solver.showXWing = ()=>{
     Solver.candidatesToRemove = [];
     let foundXWing = Solver.findXWing(row, column);
@@ -325,24 +314,16 @@ Solver.showXWing = ()=>{
 
     if(Solver.candidatesToRemove.length > 0)
     {
-        console.log("X-Wing (Code 6)");
-        return Solver.X_WING;
+        console.log("X-Wing");
+        return Solver.REMOVE;
     }
     return false;
 }
 
-// remove eliminated candidates from X-Wing (method code 6 solution)
-Solver.removeXWingCandidates = ()=>{
-    if(Solver.candidatesToRemove.length == 0) return;
-
-    Solver.candidatesToRemove.forEach(cadidateObj=>{
-        cadidateObj.remove();
-    });
-
-    Solver.candidatesToRemove = [];
-}
-
-// highlight Finned X-Wing (method code 7)
+/**
+ * Highlights Finned X-Fing its houses and candidates eliminatet by it.
+ * @returns {Symbol | false} Solver.REMOVE or false.
+ */
 Solver.showFinnedXWing = ()=>{
     Solver.candidatesToRemove = [];
     let foundFinnedXWing = Solver.findFinnedXWing(row, column);
@@ -396,29 +377,15 @@ Solver.showFinnedXWing = ()=>{
 
     if(Solver.candidatesToRemove.length > 0)
     {
-        console.log("Finned X-Wing (Code 7)");
-        return Solver.FINNED_X_WING;
+        console.log("Finned X-Wing");
+        return Solver.REMOVE;
     }
     return false;
 }
 
-// remove eliminated candidates from Finned X-Wing (method code 7 solution)
-Solver.removeFinnedXWingCandidates = ()=>{
-    if(Solver.candidatesToRemove.length == 0) return;
-
-    Solver.candidatesToRemove.forEach(cadidateObj=>{
-        cadidateObj.remove();
-    });
-
-    Solver.candidatesToRemove = [];
-}
-
 //#endregion methods + solutions
 
-// alternate between showing method and applying it
-// return true if any action could be taken otherwise return false
 Solver.step = ()=>{
-
     // fill candidates if flag is ont set and set flag to true
     if(!Solver.candidatesFilled)
     {
@@ -426,61 +393,49 @@ Solver.step = ()=>{
         Solver.candidatesFilled = true;
         return true;
     }
-
-    if(Solver.methodCode == undefined)
-        Solver.methodCode = false;
     
-    // if method was found then execude it
-    if(Solver.methodCode)
+    if(Solver.action == undefined)
     {
-        switch(Solver.methodCode)
-        {
-            case Solver.NAKED_SINGLE:
-                Solver.solveNakedSingles();
-                break;
-            case Solver.HIDDEN_SINGLES:
-                Solver.solveHiddenSingles();
-                break;
-            case Solver.ELIMINATION_PAIR:
-                Solver.removeEliminationPairsCandidates();
-                break;
-            case Solver.HIDDEN_DOUBLE:
-                Solver.removeDoubleEmininationCandidates();
-                break;
-            case Solver.TWO_PAIR_ELIMINATION:
-                Solver.removeTwoPairEliminationCandidates();
-                break;
-            case Solver.X_WING:
-                Solver.removeXWingCandidates();
-                break;
-            case Solver.FINNED_X_WING:
-                Solver.removeFinnedXWingCandidates();
-                break;
-            default:
-                break;
-        }
+        Solver.action = Solver.FIND_SOLUTION;
+    }
+
+    if(Solver.action == Solver.FIND_SOLUTION)
+    {
         board.removeHighlight();
         board.removeCellHighlight();
-        Solver.methodCode = false;
+        Solver.action = Solver.showNakedSingles();
+        if(Solver.action) return true;
+        Solver.action = Solver.showHiddenSingles();
+        if(Solver.action) return true;
+        Solver.action = Solver.showEliminationPairs();
+        if(Solver.action) return true;
+        Solver.action = Solver.showHiddenDoubles();
+        if(Solver.action) return true;
+        Solver.action = Solver.showTwoPairElimination();
+        if(Solver.action) return true;
+        Solver.action = Solver.showXWing();
+        if(Solver.action) return true;
+        Solver.action = Solver.showFinnedXWing();
+        if(Solver.action) return true;
+    }
+    else if(Solver.action == Solver.SOLVE)
+    {
+        board.removeHighlight();
+        Solver.solveCells();
+        Solver.action = Solver.FIND_SOLUTION;
         return true;
     }
-    else // find and save method code to Solver.methodCode
+    else if(Solver.action == Solver.REMOVE)
     {
-        Solver.methodCode = Solver.showNakedSingles();
-        if(Solver.methodCode) return true;
-        Solver.methodCode = Solver.showHiddenSingles();
-        if(Solver.methodCode) return true;
-        Solver.methodCode = Solver.showEliminationPairs();
-        if(Solver.methodCode) return true;
-        Solver.methodCode = Solver.showHiddenDoubles();
-        if(Solver.methodCode) return true;
-        Solver.methodCode = Solver.showTwoPairElimination();
-        if(Solver.methodCode) return true;
-        Solver.methodCode = Solver.showXWing();
-        if(Solver.methodCode) return true;
-        Solver.methodCode = Solver.showFinnedXWing();
-        if(Solver.methodCode) return true;
+        Solver.removeCandidates();
+        Solver.action = Solver.FIND_SOLUTION;
+        return true;
     }
-    return false;
+    else
+    {
+        console.log("Solution not found!");
+        Solver.action = Solver.FIND_SOLUTION;
+    }
 
+    return false;
 }

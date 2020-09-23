@@ -1,12 +1,8 @@
 class Solver
 {
-    static NAKED_SINGLE = Symbol(1);
-    static HIDDEN_SINGLES = Symbol(2);
-    static ELIMINATION_PAIR = Symbol(3);
-    static HIDDEN_DOUBLE = Symbol(4);
-    static TWO_PAIR_ELIMINATION = Symbol(5);
-    static X_WING = Symbol(6);
-    static FINNED_X_WING = Symbol(7);
+    static FIND_SOLUTION = Symbol("search");
+    static SOLVE = Symbol("solve");
+    static REMOVE = Symbol("remove");
     
     //#region Hidden and Naked Singles
 
