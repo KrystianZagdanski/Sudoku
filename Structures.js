@@ -1,5 +1,3 @@
-//#region Cell
-
 class Cell
 {
     /**
@@ -108,9 +106,6 @@ class Cell
         return type;
     }
 }
-//#endregion Cell
-
-//#region House
 
 class House
 {
@@ -234,9 +229,7 @@ class House
         return count;
     }
 }
-//#endregion House
 
-//#region Candidate Object
 class CandidateObj
 {
     /**
@@ -264,13 +257,7 @@ class CandidateObj
         this.cell.solve(this.value);
     }
 }
-//#endregion Candidate Object
 
-//#region Pair Object
-/*
-    Object conataining pair of cells with the same candidate
-    or single cell with only two candidates
-*/
 class PairObj
 {
     /**
@@ -301,12 +288,7 @@ class PairObj
         }
     }
 }
-//#endregion Pair Object
 
-//#region Link
-/*
-    Pair of 2 same numbers in 2 diferent cells or 2 diferent numbesr in one cell
-*/
 class Link
 {
     /**
@@ -360,9 +342,6 @@ class Link
         }
     }
 }
-//#endregion Link
-
-//#region Chain
 
 class Chain
 {
@@ -443,5 +422,4 @@ class Chain
             this.last = null;
         }
     }
-    //#endregion Chain
 }

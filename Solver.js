@@ -1,8 +1,3 @@
-/*
-    Active parts of solver
-*/
-//#region methods + solutions
-
 /**
  * Solve cells with candidates from Solver.solutions.
  */
@@ -383,10 +378,12 @@ Solver.showFinnedXWing = ()=>{
     return false;
 }
 
-//#endregion methods + solutions
-
+/**
+ * Make one step of solving sudoku.
+ * @returns {boolean} false if couldn't do any action else true.
+ */
 Solver.step = ()=>{
-    // fill candidates if flag is ont set and set flag to true
+    // fill candidates if flag is not set and set flag to true
     if(!Solver.candidatesFilled)
     {
         Solver.fillAllCandidates(cell);

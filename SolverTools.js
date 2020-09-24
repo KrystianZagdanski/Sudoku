@@ -4,8 +4,6 @@ class Solver
     static SOLVE = Symbol("solve");
     static REMOVE = Symbol("remove");
     
-    //#region Hidden and Naked Singles
-
     /**
      * Returns list of naked single candidates of false if didn't found any.
      * @param  {Array.<Array.<Cell>>} cells - Cells of sudoku.
@@ -65,12 +63,7 @@ class Solver
         if(hiddenSingles.length == 0) return false;
         else return hiddenSingles;
     }
-    //#endregion Hidden and Naked Singles
-    
-    //#region Pairs
 
-    // return list containing PairObj
-    // return false if didn't found any
     /**
      * Returns list of pairs or false if didn't found any.
      * @param  {Array.<House>} rows - Rows of sudoku.
@@ -126,10 +119,6 @@ class Solver
         else return hiddenPairs;
     }
 
-    //#endregion Hidden and Naked Pairs
-
-    //#region Double
-
     /**
      * Returns hidden double as list of objects or false if didn't found any.
      * @param  {Array.<House>} blocks - Blocks of sudoku.
@@ -173,9 +162,6 @@ class Solver
         if(hiddenDouble.length > 0) return hiddenDouble;
         else return false;
     }
-    //#endregion Double
-
-    //#region Two Pairs
 
     /**
      * Returns list of pairs or false.
@@ -223,9 +209,6 @@ class Solver
         if(pairs.length == 0) return false;
         else return pairs;
     }
-    //#endregion Two Pairs
-
-    //#region X-Wing
 
     // TODO: X-Wing with missing candidates, X-Wing with missing candidates and fins
 
@@ -459,11 +442,7 @@ class Solver
         if(xWings.length == 0) return false;
         else return xWings;
      }
-    //#endregion X-Wing
 
-    //#region Links
-
-    // return object with lists of strong links {LinksFromPairs: [], LinksFrom2DigitCell: []}
     /**
      * Returns object with lists of strong links.
      * @param  {Array.<Array.<Cell>>} cells - Cells of sudoku.
@@ -491,6 +470,4 @@ class Solver
 
         return links;
     }
-
-    //#endregion Links
 }

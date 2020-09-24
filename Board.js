@@ -1,8 +1,9 @@
-/*
-    Game Board Object 
-*/
 class Board
 {
+    /**
+     * Create new visable representation of a board.
+     * @constructor
+     */
     constructor()
     {
         // data
@@ -49,7 +50,10 @@ class Board
         this.cellHighlightColorYellow = "rgba(255,255,0,0.3)";
     }
 
-    // create board
+    /**
+     * Set given cells as cells to draw and create board.
+     * @param  {Array.<Array.<Cell>>} cells - 2d Array of cells of sudoku.
+     */
     init(cells)
     {
         let boxIndex = 0;
@@ -73,13 +77,19 @@ class Board
         }
     }
 
-    // add link
+    /**
+     * Add Link to draw.
+     * @param  {Link} aLink - Link to add.
+     */
     addLink(aLink)
     {
         this.links.push(aLink);
     }
 
-    // remove link 
+    /**
+     * Remove given link from board or all liks if aLink is not specified.
+     * @param  {Link} [aLink] - Link to remove.
+     */
     removeLink(aLink)
     {
         if(aLink)
@@ -88,19 +98,29 @@ class Board
             this.links = [];
     }
 
-    // add chain links
+    /**
+     * Add Links from given Chain to draw.
+     * @param  {Chain} aChain - Chain to draw.
+     */
     addChain(aChain)
     {
         aChain.links.forEach(link=>{this.links.push(link)});
     }
 
-    // remove chain links
+    /**
+     * Remove links from given Chain from board.
+     * @param  {Chain} aChain - Chain to remove.
+     */
     removeChain(aChain)
     {
         aChain.links.forEach(link=>{this.removeLink(link)});
     }
 
-    // add highlight
+    /**
+     * Highlights given candidate.
+     * @param  {CandidateObj} aCandidateObj - Candidate to highlight.
+     * @param  {string} [color] - Color of higlight(default green)"red" or "green" or "yellow".
+     */
     addHighlight(aCandidateObj, color)
     {
         let c = this.digitHighlightColorGreen;
@@ -111,7 +131,10 @@ class Board
         this.highlights.push({obj:aCandidateObj, color:c});
     }
 
-    // remove highlight
+    /**
+     * Remove highlight or all highlightts if candidate not given.
+     * @param  {CandidateObj} [aCandidateObj] - Highlighted candidate.
+     */
     removeHighlight(aCandidateObj)
     {
         if(aCandidateObj)
@@ -120,7 +143,11 @@ class Board
             this.highlights = [];
     }
 
-    // add cell highlight
+    /**
+     * Highlights cell of given candidate.
+     * @param  {CandidateObj} aCandidateObj - candidate with cell to highlight.
+     * @param  {string} [color] - Color of higlight(default green)"red" or "green" or "blue" or "yellow".
+     */
     addCellHighlight(aCandidateObj, color)
     {
         let c = this.cellHighlightColorGreen;
@@ -133,7 +160,10 @@ class Board
         this.cellHighlights.push({obj:aCandidateObj, color:c});
     }
 
-    // remove cell highlight
+    /**
+     * Remove higlight or all highlights if candidate is not given.
+     * @param  {CandidateObj} [aCandidateObj] - Highlight candidate.
+     */
     removeCellHighlight(aCandidateObj)
     {
         if(aCandidateObj)
@@ -141,10 +171,11 @@ class Board
         else
             this.cellHighlights = [];
     }
-
-    //#region Draw methods
-
-    // draw lines
+    
+    /**
+     * Draw lines.
+     * @param  {CanvasRenderingContext2D} ctx - Context 2d.
+     */
     drawLine(ctx)
     {
         let x0, y0, x1, y1, n;
@@ -182,7 +213,10 @@ class Board
         });
     }
 
-    // draw highlights on candidates
+    /**
+     * Draw highlights of candidates.
+     * @param  {CanvasRenderingContext2D} ctx - Context 2d.
+     */
     drawHighlights(ctx)
     {
         this.highlights.forEach(hl=>{
@@ -193,7 +227,10 @@ class Board
         });
     }
 
-    // draw highlights of cells
+    /**
+     * Draw highlights of cells.
+     * @param  {CanvasRenderingContext2D} ctx - Context 2d.
+     */
     drawCellsHighlights(ctx)
     {
         this.cellHighlights.forEach(hl=>{
@@ -206,7 +243,11 @@ class Board
         });
     }
 
-    // draw box
+    /**
+     * Draw cell on board.
+     * @param  {CanvasRenderingContext2D} ctx - Context 2d.
+     * @param  {Object} box - Box object of this Board.
+     */
     drawBox(ctx, box)
     {
         let cx = box.x+(box.w/2); // box center
@@ -231,7 +272,12 @@ class Board
         ctx.closePath();
     }
 
-    // draw digit
+    /**
+     * Draw digit on board.
+     * @param  {CanvasRenderingContext2D} ctx - Context 2d.
+     * @param  {Object} box - Box object of this Board.
+     * @param  {number} i - Index of a box.
+     */
     drawDigit(ctx, box, i)
     {
         let cx = box.x+(box.w/2); // box center
@@ -315,7 +361,11 @@ class Board
 
     }
 
-    // draw board
+    /**
+     * Draw board.
+     * @param  {HTMLCanvasElement} canvas - Canvas.
+     * @param  {CanvasRenderingContext2D} ctx - Context 2d.
+     */
     draw(canvas, ctx)
     {
         // background
@@ -333,6 +383,4 @@ class Board
         });
         this.drawLine(ctx);
     }
-
-    //#endregion Draw methods
 }

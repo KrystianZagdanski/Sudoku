@@ -20,14 +20,18 @@ var column = [];            // House with cells in columns
 var block = [];             // House with cells in blocks
 let board = new Board();    // Board object to draw on
 
-// updates board
+/**
+ * Updates Board.
+ */
 function Update()
 {
     board.draw(canvas, ctx);
 
     requestAnimationFrame(Update);
 }
-
+/**
+ * Set up elements and start Uptade()
+ */
 function main()
 {
     // add canvas to div
@@ -100,50 +104,6 @@ function main()
 
     // create text function buttons
     funcButtonsDiv = document.getElementById("funcButtonsDiv");
-    let fillCandBtn = document.createElement("button");
-    fillCandBtn.textContent = "fillAllCandidates()";
-    fillCandBtn.onclick = (e)=>{Solver.fillAllCandidates(cell)};
-    funcButtonsDiv.appendChild(fillCandBtn);
-
-    let showNakedSinglesBtn = document.createElement("button");
-    showNakedSinglesBtn.textContent = "showNakedSingles()";
-    showNakedSinglesBtn.onclick = (e)=>{Solver.showNakedSingles()};
-    funcButtonsDiv.appendChild(showNakedSinglesBtn);
-
-    let solveNakedSinglesBtn = document.createElement("button");
-    solveNakedSinglesBtn.textContent = "solveNakedSingles()";
-    solveNakedSinglesBtn.onclick = (e)=>{Solver.solveNakedSingles()};
-    funcButtonsDiv.appendChild(solveNakedSinglesBtn);
-
-    let showHiddenSinglesBtn = document.createElement("button");
-    showHiddenSinglesBtn.textContent = "showHiddenSingles()";
-    showHiddenSinglesBtn.onclick = (e)=>{Solver.showHiddenSingles()};
-    funcButtonsDiv.appendChild(showHiddenSinglesBtn);
-
-    let solveHiddenSinglesBtn = document.createElement("button");
-    solveHiddenSinglesBtn.textContent = "solveHiddenSingles()";
-    solveHiddenSinglesBtn.onclick = (e)=>{Solver.solveHiddenSingles()};
-    funcButtonsDiv.appendChild(solveHiddenSinglesBtn);
-
-    let showEliminationPairsBtn = document.createElement("button");
-    showEliminationPairsBtn.textContent = "showEliminationPairs()";
-    showEliminationPairsBtn.onclick = (e)=>{Solver.showEliminationPairs()};
-    funcButtonsDiv.appendChild(showEliminationPairsBtn);
-
-    let removeEliminationPairsCandidatesBtn = document.createElement("button");
-    removeEliminationPairsCandidatesBtn.textContent = "removeEliminationPairsCandidates()";
-    removeEliminationPairsCandidatesBtn.onclick = (e)=>{Solver.removeEliminationPairsCandidates()};
-    funcButtonsDiv.appendChild(removeEliminationPairsCandidatesBtn);
-
-    let showTwoPairEliminationBtn = document.createElement("button");
-    showTwoPairEliminationBtn.textContent = "showTwoPairElimination()";
-    showTwoPairEliminationBtn.onclick = (e)=>{Solver.showTwoPairElimination()};
-    funcButtonsDiv.appendChild(showTwoPairEliminationBtn);
-
-    let removeTwoPairEliminationCandidatesBtn = document.createElement("button");
-    removeTwoPairEliminationCandidatesBtn.textContent = "removeTwoPairEliminationCandidates()";
-    removeTwoPairEliminationCandidatesBtn.onclick = (e)=>{Solver.removeTwoPairEliminationCandidates()};
-    funcButtonsDiv.appendChild(removeTwoPairEliminationCandidatesBtn);
 
     let stepBtn = document.createElement("button");
     stepBtn.textContent = "step()";
