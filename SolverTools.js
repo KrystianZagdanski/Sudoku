@@ -212,6 +212,8 @@ class Solver
 
     // TODO: X-Wing with missing candidates, X-Wing with missing candidates and fins
 
+    
+
     /**
      * Returns x wings as list of objects or false.
      * @param  {Array.<House>} rows - Rows of sudoku.
@@ -379,69 +381,103 @@ class Solver
          else return xWings;
      }
 
-     // return x wings with missing candidate as list of {p1: PairObj, p2: PairObj, house: HouseType}
-     static findImperfectXWing(rows, columns) // TODO
-     {
+    /**
+     * Returns sashimi X-Wing as list of X-Wing objects.
+     * @param  {Array.<House>} rows - Rows of sudoku.
+     * @param  {Array.<House>} columns - Columns of sudoku.
+     * @returns {Array.<XWing>} - XWing.
+     */
+    static findSashimiXWing(rows, columns)
+    {
         let xWings = [];
-        let xWingCandidatesInRow = [[],[],[],[],[],[],[],[],[]];
-        let xWingCandidatesInColumn = [[],[],[],[],[],[],[],[],[]];
-        let candidates;
-        
-        // find candidates that might be part of x wing
-        for(let i = 0; i < 9; i++)
+        let h = ["row", "column"];
+
+        // find x-wings for all digits
+        for(let digit = 1; digit <= 9; digit++)
         {
-            for(let digit = 1; digit <= 9; digit++)
+            // for row(0) and column(1)
+            for(let hi = 0; hi < h.length; hi++)
             {
-                // add Pairs to xWingCandidates list
-                candidates = rows[i].findCandidate(digit);
-                if(candidates.length == 2 && !candidates[0].commonHouse(candidates[1]).includes("block"))
-               {
-                   xWingCandidatesInRow[digit-1].push(new PairObj([candidates[0], candidates[1]], digit));
-               }
-               candidates = columns[i].findCandidate(digit);
-               if(candidates.length == 2 && !candidates[0].commonHouse(candidates[1]).includes("block"))
-               {
-                   xWingCandidatesInColumn[digit-1].push(new PairObj([candidates[0], candidates[1]], digit));
-               }
+                let houseType = h[hi];
+                let rHouseType;
+                if (hi == 0)
+                    rHouseType = h[1];
+                else
+                    rHouseType = h[0];
+
+                let pairs = []; // [pairObj,...]
+                let xWingcandidates = []; // [house0[], house1[],...]
+
+                // find candidates and pairs
+                for(let i = 0; i < 9; i++)
+                {
+                    xWingcandidates[i] = [];
+                    let candidates
+                    if (hi == 0)
+                        candidates = rows[i].findCandidate(digit);
+                    else
+                        candidates = columns[i].findCandidate(digit);
+                    
+                    if(candidates.length == 2 && !candidates[0].commonHouse(candidates[1]).includes("block"))
+                    {
+                        pairs.push(new PairObj([candidates[0], candidates[1]], digit));
+                    }
+                    else if(candidates.length == 3)
+                    {
+                        let blocks = 1;
+                        for(let c = 0; c < candidates.length-1; c++)
+                        {
+                            if(!candidates[c].commonHouse(candidates[c+1]).includes("block")) blocks++;
+                        }
+                        if(blocks == 2)
+                        {
+                            xWingcandidates[i] = candidates;
+                        }
+                    }
+                }
+                
+                // find sashimi x-wing with 1 fin
+                for(let pi = 0; pi < pairs.length; pi++)
+                {
+                    for(let i = 0; i < pairs.length; i++)
+                    {
+                        if(i == pi) continue;
+
+                        let connection1 = pairs[pi].cell[0].commonHouse(pairs[i].cell[0]).includes(rHouseType);
+                        let connection2 = pairs[pi].cell[1].commonHouse(pairs[i].cell[1]).includes(rHouseType);
+                        if(connection1 || connection2)
+                        {
+                            // cell of sashimi x-wing without candidate
+                            let index = pairs[i].cell[0][houseType].index;
+                            if(connection1)
+                            {
+                                let emptyCell = pairs[pi].cell[1][rHouseType].cells[index];
+                                if(emptyCell.commonHouse(pairs[i].cell[1]).includes("block"))
+                                {
+                                    let xWingCells = [pairs[pi].cell[0], pairs[pi].cell[1], pairs[i].cell[0]];
+                                    xWings.push(new XWing(digit, xWingCells, houseType, [pairs[i].cell[1]], emptyCell));
+                                }
+                            }
+                            else
+                            {
+                                let emptyCell = pairs[pi].cell[0][houseType].cells[index];
+                                if(emptyCell.commonHouse(pairs[i].cell[0]).includes("block"))
+                                {
+                                    let xWingCells = [pairs[pi].cell[0], pairs[pi].cell[1], pairs[i].cell[1]];
+                                    xWings.push(new XWing(digit, xWingCells, houseType, [pairs[i].cell[0]], emptyCell));
+                                }
+                            }
+                            
+                        }
+                    }
+                }
+                // TODO: find sashimi x-wing with 2 fins
+                
             }
         }
-        // find finned x wing with candidates in rows 
-        xWingCandidatesInRow.forEach(PairList=>{
-           if(PairList.length == 0) return;
-           
-           PairList.forEach(aPair=>{
-               // find matching pair to cemplete x wing
-               aPair.cell[0].column.findCandidate(aPair.value).forEach(cell=>{
-                   let candidatesForSecoundPair = cell.row.findCandidate(aPair.value);
-                   if(candidatesForSecoundPair.length < 3 || candidatesForSecoundPair.length > 4) return;
-                   let pairCells = [];
-                   let fins = [];
-                   candidatesForSecoundPair.forEach(cFSP=>{
-                       if(cFSP.commonHouse(aPair.cell[0]).includes("column") || cFSP.commonHouse(aPair.cell[1]).includes("column"))
-                       {
-                           pairCells.push(cFSP);
-                       }
-                       else
-                       {
-                           fins.push(cFSP);
-                       }
-                   });
-                   if(pairCells.length < 2 || fins.length == 0) return;
-                   // make sure both fins are in the same block as only one of the cells in pair 
-                   if( !(fins[0].commonHouse(pairCells[0]).includes("block") || fins[0].commonHouse(pairCells[1]).includes("block")) ) return;
-                   if(fins.length == 2)
-                   {
-                       if(!fins[0].commonHouse(fins[1]).includes("block")) return;
-                   }
-                   let secoundPair = new PairObj(pairCells, aPair.value);
-                   xWings.push({p1: aPair, p2: secoundPair, house: "row", fin: fins});
-               });
-               
-           });
-        });
         if(xWings.length == 0) return false;
         else return xWings;
-     }
+    }
 
     /**
      * Returns object with lists of strong links.

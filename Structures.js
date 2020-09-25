@@ -289,6 +289,43 @@ class PairObj
     }
 }
 
+class XWing
+{
+    /**
+     * Represents X-Wing
+     * @param  {number} value - Candidate digit.
+     * @param  {Array.<Cell>} cells - Cells of X-wing.
+     * @param  {string} houseType - Common house type of cells "row" or "column".
+     * @param  {Array.<Cell>} [fins] - Finn Cells of X-Wing.
+     * @param  {Cell} emptyCell - Cell withoud candidate.
+     * @constructor
+     */
+    constructor(value, cells, houseType, fins, emptyCell)
+    {
+        this.value = value;
+        this.cells = cells;
+        this.houseType = houseType;
+        this.fins = fins || [];
+        this.emptyCell = emptyCell || false;
+
+        if(fins.length == 0)
+            this.type = "X-Wing";
+        else if(cells.length == 4)
+            this.type = "Finned X-Wing";
+        else
+            this.type = "Sashimi X-Wing";
+    }
+    /**
+     * Returns cell of a X-Wing as CandidateObj.
+     * @param  {number} index - index of Cell.
+     * @returns {CandidateObj} - CandidateObj
+     */
+    getCandidateObj(index)
+    {
+        return new CandidateObj(this.cells[index], this.value);
+    }
+}
+
 class Link
 {
     /**

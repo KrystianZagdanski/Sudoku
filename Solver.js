@@ -377,6 +377,65 @@ Solver.showFinnedXWing = ()=>{
     }
     return false;
 }
+/**
+ * Highlights Sashimi X-Fing its houses and candidates eliminatet by it.
+ * @returns {Symbol | false} Solver.REMOVE or false;
+ */
+Solver.showSashimiXWing = ()=>{
+    Solver.candidatesToRemove = [];
+    let foundSashimiXWing = Solver.findSashimiXWing(row, column);
+    if(!foundSashimiXWing) return false;
+
+    let foundXwing = false;
+
+    foundSashimiXWing.forEach(xwing=>{
+        if(foundXwing) return;
+
+        let eliminateIn;
+        if(xwing.houseType == "row")
+            eliminateIn = "column";
+        else
+            eliminateIn = "row";
+
+        xwing.emptyCell.block.cells.forEach(cell=>{
+            if(!cell.candidates.includes(xwing.value)) return;
+
+            if(!xwing.fins.includes(cell) && !xwing.cells.includes(cell) && cell.commonHouse(xwing.emptyCell).includes(eliminateIn))
+            {
+                foundXwing = true;
+                let c = new CandidateObj(cell, xwing.value);
+                Solver.candidatesToRemove.push(c);
+                board.addHighlight(c, "red");
+                board.addCellHighlight(c, "red");
+            }
+        });
+        if(foundXwing)
+        {
+            board.addHighlight(xwing.getCandidateObj(0));
+            board.addHighlight(xwing.getCandidateObj(1));
+            board.addHighlight(xwing.getCandidateObj(2));
+            xwing.fins.forEach(fin=>{
+                board.addHighlight(new CandidateObj(fin, xwing.value));
+            });
+            
+
+            board.addCellHighlight(xwing.getCandidateObj(0));
+            board.addCellHighlight(xwing.getCandidateObj(1));
+            board.addCellHighlight(xwing.getCandidateObj(2));
+            board.addCellHighlight(new CandidateObj(xwing.emptyCell, xwing.value));
+            xwing.fins.forEach(fin=>{
+                board.addCellHighlight(new CandidateObj(fin, xwing.value), "blue");
+            });
+        }
+    });
+    
+    if(Solver.candidatesToRemove.length > 0)
+    {
+        console.log("Sashimi X-Wing");
+        return Solver.REMOVE;
+    }
+    return false;
+}
 
 /**
  * Make one step of solving sudoku.
@@ -413,6 +472,8 @@ Solver.step = ()=>{
         Solver.action = Solver.showXWing();
         if(Solver.action) return true;
         Solver.action = Solver.showFinnedXWing();
+        if(Solver.action) return true;
+        Solver.action = Solver.showSashimiXWing();
         if(Solver.action) return true;
     }
     else if(Solver.action == Solver.SOLVE)
