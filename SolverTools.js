@@ -210,15 +210,11 @@ class Solver
         else return pairs;
     }
 
-    // TODO: X-Wing with missing candidates, X-Wing with missing candidates and fins
-
-    
-
     /**
      * Returns x wings as list of objects or false.
      * @param  {Array.<House>} rows - Rows of sudoku.
      * @param  {Array.<House>} columns - Columns of sudoku.
-     * @returns {Array.<Object> | false} [{p1: PairObj, p2: PairObj, house: HouseType},...] or false.
+     * @returns {Array.<XWing> | false} XWing or false.
      */
     static findXWing(rows, columns)
     {
@@ -257,19 +253,13 @@ class Solver
                     let comHouse2 = PairList[i].cell[1].commonHouse(PairList[j].cell[1]);
                     if(oryginalHouse.includes("row") && comHouse1.includes("column") && comHouse2.includes("column"))
                     {
-                        xWings.push({
-                            p1: PairList[i],
-                            p2: PairList[j],
-                            house: "row"
-                        });
+                        let xWingCells = [PairList[i].cell[0], PairList[i].cell[1], PairList[j].cell[0], PairList[j].cell[1]];
+                        xWings.push(new XWing(PairList[i].value, xWingCells, "row"));
                     }
                     if(oryginalHouse.includes("column") && comHouse1.includes("row") && comHouse2.includes("row"))
                     {
-                        xWings.push({
-                            p1: PairList[i],
-                            p2: PairList[j],
-                            house: "column"
-                        });
+                        let xWingCells = [PairList[i].cell[0], PairList[i].cell[1], PairList[j].cell[0], PairList[j].cell[1]];
+                        xWings.push(new XWing(PairList[i].value, xWingCells, "column"));
                     }
                 }
             }
@@ -282,7 +272,7 @@ class Solver
       * Returns finned X-wings as list of objects or false.
       * @param  {Array.<House>} rows - Rows of sudoku.
       * @param  {Array.<House>} columns - Columns of sudoku.
-      * @returns {Array.<Object> | false} [{p1: PairObj, p2: PairObj, house: HouseType, fin: []},...] or false.
+      * @returns {Array.<XWing> | false} XWing or false.
       */
      static findFinnedXWing(rows, columns)
      {
@@ -337,8 +327,8 @@ class Solver
                     {
                         if(!fins[0].commonHouse(fins[1]).includes("block")) return;
                     }
-                    let secoundPair = new PairObj(pairCells, aPair.value);
-                    xWings.push({p1: aPair, p2: secoundPair, house: "row", fin: fins});
+                    let xWingCells = [aPair.cell[0], aPair.cell[1], pairCells[0], pairCells[1]];
+                    xWings.push(new XWing(aPair.value, xWingCells, "row", fins));
                 });
                 
             });
@@ -371,8 +361,8 @@ class Solver
                     {
                         if(!fins[0].commonHouse(fins[1]).includes("block")) return;
                     }
-                    let secoundPair = new PairObj(pairCells, aPair.value);
-                    xWings.push({p1: aPair, p2: secoundPair, house: "column", fin: fins});
+                    let xWingCells = [aPair.cell[0], aPair.cell[1], pairCells[0], pairCells[1]];
+                    xWings.push(new XWing(aPair.value, xWingCells, "column", fins));
                 });
                 
             });
@@ -385,7 +375,7 @@ class Solver
      * Returns sashimi X-Wing as list of X-Wing objects.
      * @param  {Array.<House>} rows - Rows of sudoku.
      * @param  {Array.<House>} columns - Columns of sudoku.
-     * @returns {Array.<XWing>} - XWing.
+     * @returns {Array.<XWing> | false} - XWing or false.
      */
     static findSashimiXWing(rows, columns)
     {
@@ -406,13 +396,13 @@ class Solver
                     rHouseType = h[0];
 
                 let pairs = []; // [pairObj,...]
-                let xWingcandidates = []; // [house0[], house1[],...]
+                let xWingCandidates = []; // [house0[], house1[],...]
 
-                // find candidates and pairs
+                // for every house find candidates and pairs
                 for(let i = 0; i < 9; i++)
                 {
-                    xWingcandidates[i] = [];
-                    let candidates
+                    xWingCandidates[i] = [];
+                    let candidates;
                     if (hi == 0)
                         candidates = rows[i].findCandidate(digit);
                     else
@@ -431,7 +421,7 @@ class Solver
                         }
                         if(blocks == 2)
                         {
-                            xWingcandidates[i] = candidates;
+                            xWingCandidates[i] = candidates;
                         }
                     }
                 }
@@ -460,7 +450,7 @@ class Solver
                             }
                             else
                             {
-                                let emptyCell = pairs[pi].cell[0][houseType].cells[index];
+                                let emptyCell = pairs[pi].cell[0][rHouseType].cells[index];
                                 if(emptyCell.commonHouse(pairs[i].cell[0]).includes("block"))
                                 {
                                     let xWingCells = [pairs[pi].cell[0], pairs[pi].cell[1], pairs[i].cell[1]];
@@ -472,6 +462,37 @@ class Solver
                     }
                 }
                 // TODO: find sashimi x-wing with 2 fins
+                pairs.forEach(pair=>{
+                    xWingCandidates.forEach(digits=>{
+                        let xWingCells = [];
+                        xWingCells.push(pair.cell[0]);
+                        xWingCells.push(pair.cell[1]);
+                        let fins = [];
+                        let emptyCell;
+                        for(let ci = 0; ci < digits.length; ci++)
+                        {
+                            let index = digits[ci][houseType].index;
+                            if(digits[ci].commonHouse(pair.cell[0]).includes(rHouseType))
+                            {
+                                xWingCells.push(digits[ci]);
+                                emptyCell = pair.cell[1][rHouseType].cells[index];
+                            }
+                            else if(digits[ci].commonHouse(pair.cell[1]).includes(rHouseType))
+                            {
+                                xWingCells.push(digits[ci]);
+                                emptyCell = pair.cell[0][rHouseType].cells[index];
+                            }
+                            else
+                            {
+                                fins.push(digits[ci]);
+                            }
+                        }
+                        if(fins.length == 2 && fins[0].commonHouse(fins[1]).includes("block") && fins[0].commonHouse(emptyCell).includes("block"))
+                        {
+                            xWings.push(new XWing(pair.value, xWingCells, houseType, fins, emptyCell));
+                        }
+                    });
+                });
                 
             }
         }

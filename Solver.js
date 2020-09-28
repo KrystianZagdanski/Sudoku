@@ -220,22 +220,22 @@ Solver.showXWing = ()=>{
 
     foundXWing.forEach(xWing=>{
         if(properXWingFound) return;
-        let xWingCandidate = xWing.p1.value;
-        if(xWing.house == "row")
+        let xWingCandidate = xWing.value;
+        if(xWing.houseType == "row")
         {
             // hl candidates to eliminate in columns
-            if(xWing.p1.cell[0].column.countCandidate(xWingCandidate) > 2 ||
-            xWing.p1.cell[1].column.countCandidate(xWingCandidate) > 2)
+            if(xWing.cells[0].column.countCandidate(xWingCandidate) > 2 ||
+            xWing.cells[1].column.countCandidate(xWingCandidate) > 2)
             {
                 properXWingFound = true;
                 for(let i = 0; i < 2; i++)
                 {
-                    xWing.p1.cell[i].column.cells.forEach(cell=>{
+                    xWing.cells[i].column.cells.forEach(cell=>{
                         let hlGreen = false;
                         let c = new CandidateObj(cell, xWingCandidate);
                         if(cell.candidates.includes(xWingCandidate))
                         {
-                            if(cell != xWing.p1.cell[i] && cell != xWing.p2.cell[i])
+                            if(cell != xWing.cells[i] && cell != xWing.cells[i+2])
                             {
                                 board.addHighlight(c, "red");
                                 Solver.candidatesToRemove.push(c);
@@ -253,12 +253,12 @@ Solver.showXWing = ()=>{
                     });
                 }
                 // add green highlight
-                xWing.p1.cell[0].row.cells.forEach(cell=>{
-                    if(cell == xWing.p1.cell[0] || cell == xWing.p1.cell[1]) return;
+                xWing.cells[0].row.cells.forEach(cell=>{
+                    if(cell == xWing.cells[0] || cell == xWing.cells[1]) return;
                     board.addCellHighlight(new CandidateObj(cell, xWingCandidate));
                 });
-                xWing.p2.cell[0].row.cells.forEach(cell=>{
-                    if(cell == xWing.p2.cell[0] || cell == xWing.p2.cell[1]) return;
+                xWing.cells[2].row.cells.forEach(cell=>{
+                    if(cell == xWing.cells[2] || cell == xWing.cells[3]) return;
                     board.addCellHighlight(new CandidateObj(cell, xWingCandidate));
                 });
                 
@@ -266,18 +266,18 @@ Solver.showXWing = ()=>{
         }
         else if(xWing.house == "column")
         {
-            if(xWing.p1.cell[0].row.countCandidate(xWingCandidate) > 2 ||
-            xWing.p1.cell[1].row.countCandidate(xWingCandidate) > 2)
+            if(xWing.cells[0].row.countCandidate(xWingCandidate) > 2 ||
+            xWing.cells[1].row.countCandidate(xWingCandidate) > 2)
             {
                 properXWingFound = true;
                 for(let i = 0; i < 2; i++)
                 {
-                    xWing.p1.cell[i].row.cells.forEach(cell=>{
+                    xWing.cells[i].row.cells.forEach(cell=>{
                         let hlGreen = false;
                         let c = new CandidateObj(cell, xWingCandidate);
                         if(cell.candidates.includes(xWingCandidate))
                         {
-                            if(cell != xWing.p1.cell[i] && cell != xWing.p2.cell[i])
+                            if(cell != xWing.cells[i] && cell != xWing.cells[i+2])
                             {
                                 board.addHighlight(c, "red");
                                 Solver.candidatesToRemove.push(c);
@@ -295,12 +295,12 @@ Solver.showXWing = ()=>{
                     });
                 }
                 // add green highlight
-                xWing.p1.cell[0].column.cells.forEach(cell=>{
-                    if(cell == xWing.p1.cell[0] || cell == xWing.p1.cell[1]) return;
+                xWing.cells[0].column.cells.forEach(cell=>{
+                    if(cell == xWing.cells[0] || cell == xWing.cells[1]) return;
                     board.addCellHighlight(new CandidateObj(cell, xWingCandidate));
                 });
-                xWing.p2.cell[0].column.cells.forEach(cell=>{
-                    if(cell == xWing.p2.cell[0] || cell == xWing.p2.cell[1]) return;
+                xWing.cells[2].column.cells.forEach(cell=>{
+                    if(cell == xWing.cells[2] || cell == xWing.cells[3]) return;
                     board.addCellHighlight(new CandidateObj(cell, xWingCandidate));
                 });
             }
@@ -331,38 +331,37 @@ Solver.showFinnedXWing = ()=>{
 
         for(let pi = 0; pi < 2; pi++)
         {
-            if(fXWing.p2.cell[pi].commonHouse(fXWing.fin[0]).includes("block"))
+            if(fXWing.cells[pi+2].commonHouse(fXWing.fins[0]).includes("block"))
             {
                 let func = (cell)=>{
-                    if(cell.commonHouse(fXWing.p2.cell[pi]).includes("block") && cell.candidates.includes(fXWing.p2.value) &&
-                     cell != fXWing.p2.cell[pi] && cell != fXWing.p1.cell[pi])
+                    if(cell.commonHouse(fXWing.cells[pi+2]).includes("block") && cell.candidates.includes(fXWing.value) &&
+                     cell != fXWing.cells[pi+2] && cell != fXWing.cells[pi])
                         {
                             properFinnedXWingFound = true;
-                            let c = new CandidateObj(cell, fXWing.p2.value);
+                            let c = new CandidateObj(cell, fXWing.value);
                             board.addHighlight(c, "red");
                             board.addCellHighlight(c, "red");
                             Solver.candidatesToRemove.push(c);
                         }
                 }
-                if(fXWing.house == "row")
-                    fXWing.p2.cell[pi].column.cells.forEach(func);
+                if(fXWing.houseType == "row")
+                    fXWing.cells[pi+2].column.cells.forEach(func);
                 else
-                    fXWing.p2.cell[pi].row.cells.forEach(func);
+                    fXWing.cells[pi+2].row.cells.forEach(func);
 
                 if(properFinnedXWingFound)
                 {
-                    board.addHighlight(fXWing.p1.getCandidateObj(0));
-                    board.addHighlight(fXWing.p1.getCandidateObj(1));
-                    board.addCellHighlight(fXWing.p1.getCandidateObj(0));
-                    board.addCellHighlight(fXWing.p1.getCandidateObj(1));
+                    board.addHighlight(fXWing.getCandidateObj(0));
+                    board.addHighlight(fXWing.getCandidateObj(1));
+                    board.addHighlight(fXWing.getCandidateObj(2));
+                    board.addHighlight(fXWing.getCandidateObj(3));
+                    board.addCellHighlight(fXWing.getCandidateObj(0));
+                    board.addCellHighlight(fXWing.getCandidateObj(1));
+                    board.addCellHighlight(fXWing.getCandidateObj(2));
+                    board.addCellHighlight(fXWing.getCandidateObj(3));
 
-                    board.addHighlight(fXWing.p2.getCandidateObj(0));
-                    board.addHighlight(fXWing.p2.getCandidateObj(1));
-                    board.addCellHighlight(fXWing.p2.getCandidateObj(0));
-                    board.addCellHighlight(fXWing.p2.getCandidateObj(1));
-
-                    fXWing.fin.forEach(fin=>{
-                        board.addCellHighlight(new CandidateObj(fin, fXWing.p1.value), "blue");
+                    fXWing.fins.forEach(fin=>{
+                        board.addCellHighlight(new CandidateObj(fin, fXWing.value), "blue");
                     });
                 }
             }

@@ -28,6 +28,9 @@ function loadSave(e)
     };
     reader.readAsText(file);
     Solver.candidatesFilled = false;
+    Solver.solutions = [];
+    Solver.candidatesToRemove = [];
+    Solver.action = Solver.FIND_SOLUTION;
 }
 
 // save and download game save file

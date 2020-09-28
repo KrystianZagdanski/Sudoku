@@ -297,7 +297,7 @@ class XWing
      * @param  {Array.<Cell>} cells - Cells of X-wing.
      * @param  {string} houseType - Common house type of cells "row" or "column".
      * @param  {Array.<Cell>} [fins] - Finn Cells of X-Wing.
-     * @param  {Cell} emptyCell - Cell withoud candidate.
+     * @param  {Cell} [emptyCell] - Cell withoud candidate.
      * @constructor
      */
     constructor(value, cells, houseType, fins, emptyCell)
@@ -307,13 +307,6 @@ class XWing
         this.houseType = houseType;
         this.fins = fins || [];
         this.emptyCell = emptyCell || false;
-
-        if(fins.length == 0)
-            this.type = "X-Wing";
-        else if(cells.length == 4)
-            this.type = "Finned X-Wing";
-        else
-            this.type = "Sashimi X-Wing";
     }
     /**
      * Returns cell of a X-Wing as CandidateObj.
