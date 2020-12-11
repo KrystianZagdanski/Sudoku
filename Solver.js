@@ -376,6 +376,7 @@ Solver.showFinnedXWing = ()=>{
     }
     return false;
 }
+
 /**
  * Highlights Sashimi X-Fing its houses and candidates eliminatet by it.
  * @returns {Symbol | false} Solver.REMOVE or false;
@@ -495,4 +496,11 @@ Solver.step = ()=>{
     }
 
     return false;
+}
+
+/**
+ * Solve sudoku using Sudoku lovling metohods.
+ */
+Solver.solve = ()=>{
+    while(Solver.step());
 }

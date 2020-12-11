@@ -181,6 +181,25 @@ class Solver
         if(twoDigitCells.length == 0) return false;
         else return twoDigitCells;
     }
+    /**
+     * Returns list of objects or false.
+     * @param  {Array.<Array.<Cell>>} cells - Cells of sudoku
+     * @returns {Array.<Object> | flase} {cell, values[]} or false.
+     */
+    static findThreeDigitCells(cells)
+    {
+        let threeDigitCells = [];
+        cells.forEach(col =>{
+            col.forEach(cell =>{
+                if(cell.candidates.length == 3)
+                    threeDigitCells.push({cell: cell, values: [cell.candidates[0], cell.candidates[1], cell.candidates[2]]});
+            });
+        });
+        
+        if(threeDigitCells.length == 0) return false;
+        else return threeDigitCells;
+    }
+    
 
     /**
      * Returns list of lists of two PairObj or false.

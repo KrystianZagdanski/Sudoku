@@ -111,5 +111,11 @@ function main()
     stepBtn.style.backgroundColor = "lime";
     funcButtonsDiv.appendChild(stepBtn);
 
+    let solveBtn = document.createElement("button");
+    solveBtn.textContent = "solve()";
+    solveBtn.onclick = (e)=>{Solver.solve()};
+    solveBtn.style.backgroundColor = "lime";
+    funcButtonsDiv.appendChild(solveBtn);
+
     requestAnimationFrame(Update);
 }

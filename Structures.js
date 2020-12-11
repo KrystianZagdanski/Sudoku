@@ -28,6 +28,25 @@ class Cell
     }
 
     /**
+     * Take Cell and returns true if it have the same candidates
+     * @param {Cell} Cell - Cell objesct
+     * @returns {true | false} true|false
+     */
+    haveSameCandidatesAs(Cell)
+    {
+        if(this.candidates.length != Cell.candidates.length)
+            return false;
+        
+        for(let i = 0; i < this.candidates.length; i++)
+        {
+            if(this.candidates[i] != Cell.candidates[i])
+                return false;
+        }
+
+        return true;
+    }
+
+    /**
      * Add candidates to Cell.
      * @param  {Array.<number> | number} candidates - Candidates you want to add.
      */
@@ -268,7 +287,7 @@ class PairObj
     constructor(aCell, values)
     {
         this.cell = aCell;
-        this.value = values; 
+        this.value = values;
     }
 
     /**
