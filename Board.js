@@ -1,5 +1,12 @@
 class Board
 {
+
+    static COLOR = {
+        RED: "red",
+        GREEN: "green",
+        BLUE: "blue",
+        YELLOW: "yellow"
+    };
     /**
      * Create new visable representation of a board.
      * @constructor
@@ -42,6 +49,7 @@ class Board
         // highlights
         this.digitHighlightColorGreen = "rgba(0,200,0,0.4)";
         this.digitHighlightColorRed = "rgba(200,0,0,0.4)";
+        this.digitHighlightColorBlue = "rgba(0,0,200,0.2)";
         this.digitHighlightColorYellow = "rgba(255,255,0,0.4)";
 
         this.cellHighlightColorGreen = "rgba(0,200,0,0.2)";
@@ -126,6 +134,8 @@ class Board
         let c = this.digitHighlightColorGreen;
         if(color == "red")
             c = this.digitHighlightColorRed;
+        else if(color == "blue")
+            c = this.digitHighlightColorBlue;
         else if(color == "yellow")
             c = this.digitHighlightColorYellow;
         this.highlights.push({obj:aCandidateObj, color:c});

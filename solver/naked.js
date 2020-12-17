@@ -92,7 +92,8 @@ Solver.findNakedQuads = (aHouse)=>{
 
 /**
  * Take list of House objects and return object with naked pairs, triples and quads
- * @param {Array.<House>} aHouseArr 
+ * @param {Array.<House>} aHouseArr - List of House objects
+ * @returns {Object.<Array.<Array>>} {pairs[cells[2],...], triples[cells[3],...], quads[cells[4],...]}
  */
 Solver.findNaked = (aHouseArr)=>{
     let naked = {
@@ -103,18 +104,41 @@ Solver.findNaked = (aHouseArr)=>{
     let temp;
     for(let i = 0; i < aHouseArr.length; i++)
     {
-        // naked.pairs[i] = Solver.findNakedPairs(aHouseArr[i]);
-        // naked.triples[i] = Solver.findNakedTriples(aHouseArr[i]);
-        // naked.quads[i] = Solver.findNakedQuads(aHouseArr[i]);
         temp = Solver.findNakedPairs(aHouseArr[i]);
         if(temp.length > 0)
-            naked.pairs.push({id: i, cells: temp});
+            naked.pairs = temp;
         temp = Solver.findNakedTriples(aHouseArr[i]);
         if(temp.length > 0)
-            naked.triples.push({id: i, cells: temp});
+            naked.triples = temp;
         temp = Solver.findNakedQuads(aHouseArr[i]);
         if(temp.length > 0)
-            naked.quads.push({id: i, cells: temp});
+            naked.quads = temp;
     }
     return naked;
+}
+
+/**
+ * Take cells of multiple and house of multiple and return list of candidates to eliminate
+ * @param {Array.<Cell>} nakedCells - Multiple of cells
+ * @param {House} aHouse - A House object of a multiple
+ * @returns {Array.<CandidateObj>} [CandidateObj, ...]
+ */
+Solver.findEliminatedByNaked = (nakedCells, aHouse)=>{
+    let candidatesForElimination = [];
+    let nakedCandidates = nakedCells[0].candidates;
+    aHouse.cells.forEach(cell=>{
+        for(let i = 0; i < nakedCells.length; i++)
+        {
+            if(cell == nakedCells[i])
+                return;
+        }
+        for(let i = 0; i < nakedCandidates.length; i++)
+        {
+            if(cell.candidates.includes(nakedCandidates[i]))
+            {
+                candidatesForElimination.push(new CandidateObj(cell, nakedCandidates[i]));
+            }
+        }
+    });
+    return candidatesForElimination;
 }
