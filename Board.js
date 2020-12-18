@@ -42,9 +42,9 @@ class Board
         this.litCandidateColor = "#ccc";
 
         // links
-        this.weakLinkColor = "rgba(255,0,0,.6)";
-        this.weakStrongLinkColor = "rgba(255,255,0,.6)";
-        this.strongLinkColor = "rgba(0,227,0,.6)";
+        this.weakLinkColor = "rgba(255,0,0,.5)";
+        this.weakStrongLinkColor = "rgba(255,255,0,.5)";
+        this.strongLinkColor = "rgba(0,227,0,.5)";
 
         // highlights
         this.digitHighlightColorGreen = "rgba(0,200,0,0.4)";
@@ -121,7 +121,10 @@ class Board
      */
     removeChain(aChain)
     {
-        aChain.links.forEach(link=>{this.removeLink(link)});
+        if(aChain)
+            aChain.links.forEach(link=>{this.removeLink(link)});
+        else
+            this.removeLink();
     }
 
     /**
@@ -190,7 +193,7 @@ class Board
     {
         let x0, y0, x1, y1, n;
         this.links.forEach(link=>{
-            ctx.lineWidth = 3;
+            ctx.lineWidth = 2;
             if(link.isStrong())
             {
                 ctx.strokeStyle = this.strongLinkColor;

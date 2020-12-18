@@ -1,7 +1,18 @@
+/**
+ * Represents single cell in sudoku.
+ * @class
+ * @typedef {Object} Cell
+ * @property {number} value - Solution for this cell
+ * @property {number} id - index
+ * @property {Boolean} isGiven - True if it's oryginally given number and not filled by user
+ * @property {House} row - row of this cell
+ * @property {House} column - column of this cell
+ * @property {House} block - block of this cell
+ * @property {Array.<number>} _candidates - Colection of numbers which might be solution
+ */
 class Cell
 {
     /**
-     * Represents single cell in sudoku.
      * @constructor
      * @param  {number} id - Index of a cell.
      */
@@ -15,10 +26,13 @@ class Cell
         this.column = null;         // column of this cell
         this.block = null;          // block of this cell
 
-        // Private
+        /**@private */
         this._candidates = [];       // Colection of numbers which might be solution
     }
 
+    /**
+     * @readonly
+     */
     get candidates()
     {
         if(this.value)
@@ -130,7 +144,7 @@ class House
 {
     /**
      * Represents row or column or block of 9 cells in sudoku.
-     * @param  {number} id - Index of a House.
+     * @param  {number} _index - Index of a House.
      * @param {string} type - Type of a house: "row" or "column" or "block".
      * @constructor
      */
@@ -351,7 +365,7 @@ class Link
     {
         this.digitA = aCandidateObjA;
         this.digitB = aCandidateObjB;
-        this.isWeak = isWeak;
+        this.isWeak = isWeak || !this.isStrong();
     }
 
     /**
@@ -425,8 +439,33 @@ class Chain
     {
         if(this._strongLinkNext && aLink.isStrong())
             return true;
+        else if(!this._strongLinkNext)
+            return true;
         else
             return false;
+    }
+
+    /**
+     * Create Link from last point to given Candidate
+     * @param {CandidateObj} aCandidateObj - CandidateObj
+     */
+    linkTo(aCandidateObj)
+    {
+        if(this.last == null) throw Error("Chain have no links to attach to!");
+        let anchor = this.links[this.links.length-1].digitB;
+        let newLink = new Link(anchor, aCandidateObj);
+        this.push(newLink);
+    }
+
+    /**
+     * Create Link from A to B
+     * @param {CandidateObj} aCandidateObjA - CandidateObj 
+     * @param {CandidateObj} aCandidateObjB  - CandidateObj
+     */
+    linkFromTO(aCandidateObjA, aCandidateObjB)
+    {
+        let newLink = new Link(aCandidateObjA, aCandidateObjB);
+        this.push(newLink);
     }
 
     /**
@@ -441,6 +480,8 @@ class Chain
             return;
         }
 
+        if(!this._strongLinkNext)
+            aLink.isWeak = true;
         this.links.push(aLink); // add link
         this._strongLinkNext = !this._strongLinkNext; // alterd link type
         if(this.links.length % 2 == 0)
@@ -450,9 +491,9 @@ class Chain
 
         if(this.first == null) // set first cell
         {
-            this.first = aLink.cellA;
+            this.first = aLink.digitA;
         }
-        this.last = aLink.cellB; // set last cell
+        this.last = aLink.digitB; // set last cell
     }
 
     /**

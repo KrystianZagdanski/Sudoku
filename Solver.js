@@ -427,6 +427,41 @@ Solver.showBoxLine = (showAll = false)=>{
 }
 
 /**
+ * Highlights YWing.
+ * @param {Boolean} - Show all YWings if true, default false
+ * @returns {Symbol | false} Solver.REMOVE or false.
+ */
+Solver.showYWing = (showAll = false)=>{
+    Solver.candidatesToRemove = [];
+    let YWingChains = Solver.findYWing(cell);
+    YWingChains.forEach(YWing =>{
+        if(Solver.candidatesToRemove.length > 0 && !showAll)
+            return;
+
+        let elim = Solver.findEliminatedByYWing(YWing);
+        if(elim.length > 0)
+        {
+            Solver.candidatesToRemove = Solver.candidatesToRemove.concat(elim);
+            board.addChain(YWing);
+            board.addHighlight(YWing.first, Board.COLOR.BLUE);
+            board.addHighlight(YWing.last, Board.COLOR.BLUE);
+
+            elim.forEach(candidate=>{
+                board.addHighlight(candidate, Board.COLOR.RED);
+                board.addCellHighlight(candidate, Board.COLOR.RED);
+            });
+        }
+    });
+    if(Solver.candidatesToRemove.length > 0)
+    {
+        console.log("YWing NEW");
+        return Solver.REMOVE;
+    }
+    else
+        return false;
+}
+
+/**
  * Highlights X-Wing its houses and candidates eliminated by it.
  * @returns {Symbol | false} Solver.REMOVE or false.
  */
@@ -456,19 +491,19 @@ Solver.showXWing = ()=>{
                         {
                             if(cell != xWing.cells[i] && cell != xWing.cells[i+2])
                             {
-                                board.addHighlight(c, "red");
+                                board.addHighlight(c, Board.COLOR.RED);
                                 Solver.candidatesToRemove.push(c);
                             }
                             else
                             {
-                                board.addCellHighlight(c, "blue");
+                                board.addCellHighlight(c, Board.COLOR.BLUE);
                                 board.addHighlight(c);
                                 hlGreen = true;
                             }
                         }
 
                         if(!hlGreen)
-                            board.addCellHighlight(c, "red");
+                            board.addCellHighlight(c, Board.COLOR.RED);
                     });
                 }
                 // add green highlight
@@ -498,19 +533,19 @@ Solver.showXWing = ()=>{
                         {
                             if(cell != xWing.cells[i] && cell != xWing.cells[i+2])
                             {
-                                board.addHighlight(c, "red");
+                                board.addHighlight(c, Board.COLOR.RED);
                                 Solver.candidatesToRemove.push(c);
                             }
                             else
                             {
-                                board.addCellHighlight(c, "blue");
+                                board.addCellHighlight(c, Board.COLOR.BLUE);
                                 board.addHighlight(c);
                                 hlGreen = true;
                             }
                         }
 
                         if(!hlGreen)
-                            board.addCellHighlight(c, "red");
+                            board.addCellHighlight(c, Board.COLOR.RED);
                     });
                 }
                 // add green highlight
@@ -558,8 +593,8 @@ Solver.showFinnedXWing = ()=>{
                         {
                             properFinnedXWingFound = true;
                             let c = new CandidateObj(cell, fXWing.value);
-                            board.addHighlight(c, "red");
-                            board.addCellHighlight(c, "red");
+                            board.addHighlight(c, Board.COLOR.RED);
+                            board.addCellHighlight(c, Board.COLOR.RED);
                             Solver.candidatesToRemove.push(c);
                         }
                 }
@@ -580,7 +615,7 @@ Solver.showFinnedXWing = ()=>{
                     board.addCellHighlight(fXWing.getCandidateObj(3));
 
                     fXWing.fins.forEach(fin=>{
-                        board.addCellHighlight(new CandidateObj(fin, fXWing.value), "blue");
+                        board.addCellHighlight(new CandidateObj(fin, fXWing.value), Board.COLOR.BLUE);
                     });
                 }
             }
@@ -624,8 +659,8 @@ Solver.showSashimiXWing = ()=>{
                 foundXwing = true;
                 let c = new CandidateObj(cell, xwing.value);
                 Solver.candidatesToRemove.push(c);
-                board.addHighlight(c, "red");
-                board.addCellHighlight(c, "red");
+                board.addHighlight(c, Board.COLOR.RED);
+                board.addCellHighlight(c, Board.COLOR.RED);
             }
         });
         if(foundXwing)
@@ -643,7 +678,7 @@ Solver.showSashimiXWing = ()=>{
             board.addCellHighlight(xwing.getCandidateObj(2));
             board.addCellHighlight(new CandidateObj(xwing.emptyCell, xwing.value));
             xwing.fins.forEach(fin=>{
-                board.addCellHighlight(new CandidateObj(fin, xwing.value), "blue");
+                board.addCellHighlight(new CandidateObj(fin, xwing.value), Board.COLOR.BLUE);
             });
         }
     });
@@ -678,6 +713,7 @@ Solver.step = ()=>{
     {
         board.removeHighlight();
         board.removeCellHighlight();
+        board.removeChain();
         Solver.action = Solver.showNakedSingles();
         if(Solver.action) return true;
         Solver.action = Solver.showHiddenSingles();
@@ -694,6 +730,8 @@ Solver.step = ()=>{
         Solver.action = Solver.showHiddenTriples(); // NEW
         if(Solver.action) return true;
         Solver.action = Solver.showBoxLine(); // NEW
+        if(Solver.action) return true;
+        Solver.action = Solver.showYWing(); // NEW
         if(Solver.action) return true;
         Solver.action = Solver.showXWing();
         if(Solver.action) return true;
