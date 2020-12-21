@@ -65,7 +65,7 @@ Solver.findYWing = (aCellArr)=>{
 
 /**
  * Takes Chain creating YWing and return list of candidates that can be eliminated by it
- * @param {Array.<Chain>} aChainArr - List of Chain objects
+ * @param {Chain} aChain - A Chain object
  * @returns {Array.<CandidateObj>} [CandidateObj, ...] 
  */
 Solver.findEliminatedByYWing = (aChain)=>{
@@ -100,6 +100,117 @@ Solver.findEliminatedByYWing = (aChain)=>{
         if(cell2.candidates.includes(A.value))
             candidatesForElimination.push(new CandidateObj(cell2, A.value));
     }
+
+    return candidatesForElimination;
+}
+
+/**
+ * Take start pair, index of candidate of taht pair and list of pairs 
+ * and return list of Chains created from that point
+ * @param {PairObj} start - start point PairObj
+ * @param {number} startIndex - index of value to start from
+ * @param {Array.<PairObj>} pairs - list of pairs
+ * @param {Chain} chain - current chain
+ * @param {Array.<Chain>} - list of found chains
+ */
+Solver.findChain = (start, startIndex, pairs, chain = new Chain(), chains = [])=>{
+    if(chain.first == null)
+    {
+        pairs.splice(pairs.indexOf(start), 1);
+        chain.linkFromTO(new CandidateObj(start.cell, start.value[startIndex]), new CandidateObj(start.cell, start.value[startIndex>0?0:1]));
+    }
+    for(let i = 0; i < pairs.length; i++)
+    {
+        if(pairs[i].cell.commonHouse(chain.last.cell).length > 0)
+        {
+            if(pairs[i].value[0] == chain.last.value)
+            {
+                let chainCopy = chain.copy();
+                chainCopy.linkTo(new CandidateObj(pairs[i].cell, pairs[i].value[0]));
+                chainCopy.linkTo(new CandidateObj(pairs[i].cell, pairs[i].value[1]));
+                if(chainCopy.last.value == chainCopy.first.value)
+                {
+                    chains.push(chainCopy);
+                }
+                let newPairs = pairs.slice(0);
+                newPairs.splice(i, 1);
+                Solver.findChain(start, null, newPairs, chainCopy.copy(), chains);
+            }
+            else if(pairs[i].value[1] == chain.last.value)
+            {
+                let chainCopy = chain.copy();
+                chainCopy.linkTo(new CandidateObj(pairs[i].cell, pairs[i].value[1]));
+                chainCopy.linkTo(new CandidateObj(pairs[i].cell, pairs[i].value[0]));
+                if(chainCopy.last.value == chainCopy.first.value)
+                    chains.push(chainCopy);
+                let newPairs = pairs.slice(0);
+                newPairs.splice(i, 1);
+                Solver.findChain(start, null, newPairs, chainCopy.copy(), chains);
+            }
+        }
+    }
+    
+    if(startIndex != null)
+        return chains;
+    
+}
+
+/**
+ * Take list of cells and return sorted list of XY-Chains
+ * @param {Array.<Cell>} aCellArr - List of Cell objects
+ * @returns {Array.<Chain>} [Chain, ...] 
+ */
+Solver.findXYChains = (aCellArr)=>{
+    let chains = [];
+    let pairs = Solver.findTwoDigitCells(aCellArr);
+    if(!pairs)
+        return [];
+    pairs.forEach(pair=>{
+        for(let startIndex = 0; startIndex < pair.value.length; startIndex++)
+        {
+            chains = chains.concat(Solver.findChain(pair, startIndex, pairs));
+        }
+    });
+    chains.sort((c1,c2)=>{
+        if(c1.length > c2.length) return 1;
+        if(c1.length < c2.length) return -1;
+        return 0;
+    });
+    return chains;
+}
+
+/**
+ * Take Chain and return list of candidates that can be eliminated by it
+ * @param {Chain} aChain - A Chain object
+ * @returns {Array.<CandidateObj>} [CandidateObj, ...] 
+ */
+Solver.findEliminatedByXYChain = (aChain)=>{
+    let candidatesForElimination = [];
+    let A = aChain.first, B = aChain.last;
+    let commonHouses = A.cell.commonHouse(B.cell);
+
+    if(commonHouses.length == 0)
+    {
+        let ArBc = A.cell.row.cells[B.cell.column.index];
+        let AcBr = A.cell.column.cells[B.cell.row.index];
+        if(ArBc.candidates.includes(A.value) && !aChain.isPartOfChain(ArBc))
+            candidatesForElimination.push(new CandidateObj(ArBc, A.value));
+        if(AcBr.candidates.includes(A.value) && !aChain.isPartOfChain(AcBr))
+            candidatesForElimination.push(new CandidateObj(AcBr, A.value));
+    }
+    else
+    {
+        commonHouses.forEach(houseType=>{
+            A.cell[houseType].cells.forEach(ABHouseCell=>{
+                if(ABHouseCell == A.cell || ABHouseCell == B.cell)
+                    return;
+    
+                if(ABHouseCell.candidates.includes(A.value) && !aChain.isPartOfChain(ABHouseCell))
+                    candidatesForElimination.push(new CandidateObj(ABHouseCell, A.value));
+            });
+        });
+    }
+    
 
     return candidatesForElimination;
 }

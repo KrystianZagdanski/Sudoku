@@ -1,4 +1,32 @@
-/**
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: Structures.js</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: Structures.js</h1>
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>/**
  * Represents single cell in sudoku.
  * @class
  * @property {number} value - Solution for this cell.
@@ -7,7 +35,7 @@
  * @property {House} row - Row of this cell.
  * @property {House} column - Column of this cell.
  * @property {House} block - block of this cell.
- * @property {Array.<number>} _candidates - Colection of numbers which might be solution.
+ * @property {Array.&lt;number>} _candidates - Colection of numbers which might be solution.
  */
 class Cell
 {
@@ -50,7 +78,7 @@ class Cell
         if(this.candidates.length != Cell.candidates.length)
             return false;
         
-        for(let i = 0; i < this.candidates.length; i++)
+        for(let i = 0; i &lt; this.candidates.length; i++)
         {
             if(this.candidates[i] != Cell.candidates[i])
                 return false;
@@ -61,7 +89,7 @@ class Cell
 
     /**
      * Add candidates to Cell.
-     * @param  {Array.<number> | number} candidates - Candidates you want to add.
+     * @param  {Array.&lt;number> | number} candidates - Candidates you want to add.
      */
     addCandidates(candidates)
     {
@@ -74,7 +102,7 @@ class Cell
                 }
             });
         }
-        else if(candidates != null && !this._candidates.includes(candidates))
+        else if(candidates != null &amp;&amp; !this._candidates.includes(candidates))
         {
             this._candidates.push(candidates);
         }
@@ -114,7 +142,7 @@ class Cell
         cells.push(this.row.findCandidate(digit));
         cells.push(this.column.findCandidate(digit));
         cells.push(this.block.findCandidate(digit));
-        for(let i = 0; i < 3; i++)
+        for(let i = 0; i &lt; 3; i++)
         {
             cells[i].forEach(cell=>{
                 if(cell.id == this.id) return;
@@ -127,7 +155,7 @@ class Cell
     /**
      * Returns list of types of houses common with aCell.
      * @param  {Cell} aCell - Cell to compare to.
-     * @returns {Array.<string>} "row" or "column" or "block".
+     * @returns {Array.&lt;string>} "row" or "column" or "block".
      */
     commonHouse(aCell)
     {
@@ -137,29 +165,12 @@ class Cell
         if(this.block == aCell.block) type.push("block");
         return type;
     }
-
-    /**
-     * Returns list of common candidates.
-     * @param  {Cell} aCell - Cell to compare to.
-     * @returns {Array.<number>} [digit, ...].
-     */
-    commonCandidates(aCell)
-    {
-        let candidates = [];
-        this.candidates.forEach(digitA=>{
-            aCell.candidates.forEach(digitB=>{
-                if(digitA == digitB)
-                    candidates.push(digitA);
-            });
-        });
-        return candidates;
-    }
 }
 
 /**
  * Represents row or column or block of 9 cells in sudoku.
  * @calss
- * @property {Array.<Cell>} cells - List of cells within this house.
+ * @property {Array.&lt;Cell>} cells - List of cells within this house.
  * @property {number} _index - Index of a house.
  * @property {"row" | "column" | "block"} type - Type of a house.
  */
@@ -189,7 +200,7 @@ class House
      */
     addCell(aCell)
     {
-        if(this.cells.length < 9)
+        if(this.cells.length &lt; 9)
         {
             aCell[this.type] = this;
             this.cells.push(aCell);
@@ -222,7 +233,7 @@ class House
     /**
      * Returns list of Cells containing given digit in candidates.
      * @param  {number} digit - Candidate to find.
-     * @returns {Array.<Cell>}
+     * @returns {Array.&lt;Cell>}
      */
     findCandidate(digit)
     {
@@ -251,7 +262,7 @@ class House
     /**
      * Remove candidate from house except specified cells.
      * @param  {number} digit - Candidate.
-     * @param  {Array.<Cell> | Cell} [except] - Cells to ignore.
+     * @param  {Array.&lt;Cell> | Cell} [except] - Cells to ignore.
      */
     removeCandidate(digit, except)
     {
@@ -273,12 +284,12 @@ class House
 
     /**
      * Returns list of number of canidates in House.
-     * @returns {Array.<number>} [number_of_candidate_x,...]
+     * @returns {Array.&lt;number>} [number_of_candidate_x,...]
      */
     countAllCandidates()
     {
         let count = [];
-        for(let i = 1; i <= 9; i++)
+        for(let i = 1; i &lt;= 9; i++)
         {
             count[i-1] = this.countCandidate(i);
         }
@@ -322,14 +333,14 @@ class CandidateObj
 /**
  * Representation of two candidates creating a pair.(Only 2 digits in a cell or the same digit in 2 cells)
  * @class
- * @property {Array.<Cell> | Cell} cell - Cell or [Cell, Cell] creating pair.
- * @property {Array.<number> | number} value - Value or [value, value] creating pair.
+ * @property {Array.&lt;Cell> | Cell} cell - Cell or [Cell, Cell] creating pair.
+ * @property {Array.&lt;number> | number} value - Value or [value, value] creating pair.
  */
 class PairObj
 {
     /**
-     * @param  {Array.<Cell> | Cell} aCell - Cell or [Cell, Cell] creating pair.
-     * @param  {Array.<number> | number} values - [value, value] or value creating pair.
+     * @param  {Array.&lt;Cell> | Cell} aCell - Cell or [Cell, Cell] creating pair.
+     * @param  {Array.&lt;number> | number} values - [value, value] or value creating pair.
      */
     constructor(aCell, values)
     {
@@ -359,18 +370,18 @@ class PairObj
  * Represents X-Wing
  * @class
  * @property {number} value - Candidate digit.
- * @property {Array.<Cell>} cells - Cells of X-wing.
+ * @property {Array.&lt;Cell>} cells - Cells of X-wing.
  * @property {"row" | "column"} houseType - Common house type of cells.
- * @property {Array.<Cell>} fins - Finn Cells of X-Wing.
+ * @property {Array.&lt;Cell>} fins - Finn Cells of X-Wing.
  * @property {Cell} emptyCell - Cell without candidate.
  */
 class XWing
 {
     /**
      * @param  {number} value - Candidate digit.
-     * @param  {Array.<Cell>} cells - Cells of X-wing.
+     * @param  {Array.&lt;Cell>} cells - Cells of X-wing.
      * @param  {"row" | "column"} houseType - Common house type of cells.
-     * @param  {Array.<Cell>} [fins] - Finn Cells of X-Wing.
+     * @param  {Array.&lt;Cell>} [fins] - Finn Cells of X-Wing.
      * @param  {Cell} [emptyCell] - Cell without candidate.
      * @constructor
      */
@@ -458,7 +469,7 @@ class Link
  * @class
  * @property {CandidateObj} first - Start of a chain.
  * @property {CandidateObj} last - End of a chain.
- * @property {Array.<Link>} links - List of links in a chain.
+ * @property {Array.&lt;Link>} links - List of links in a chain.
  * @property {Boolean} _complete - Flag specify if chain is complete (have odd number of links).
  * @property {Boolean} _strongLinkNext - Flag specify if next link should be strong or not.
  */
@@ -489,51 +500,13 @@ class Chain
     }
 
     /**
-     * Returns length of a chain
-     * @readonly
-     */
-    get length()
-    {
-        return this.links.length;
-    }
-
-    /**
-     * Returns copy of itself.
-     * @returns {Chain} Chain
-     */
-    copy()
-    {
-        let chainCopy = new Chain();
-        chainCopy.first = this.first;
-        chainCopy.last = this.last;
-        chainCopy.links = this.links.slice(0);
-        chainCopy._complete = this._complete;
-        chainCopy._strongLinkNext = this._strongLinkNext;
-        return chainCopy;
-    }
-
-    /**
-     * Returns true if cell is part of this chain.
-     * @param {Cell} aCell - Cell you want ot search for.
-     * @returns {Boolean} true | flase
-     */
-    isPartOfChain(aCell)
-    {
-        for(let i = 0; i < this.links.length; i++)
-        {
-            if(aCell == this.links[i].digitA.cell || aCell == this.links[i].digitB.cell)
-                return true;
-        }
-        return false;
-    }
-    /**
      * Returns true if given Link can be the next link in this Chain.
      * @param  {Link} aLink - Link to check.
      * @returns {Boolean} true or false.
      */
     isValid(aLink)
     {
-        if(this._strongLinkNext && aLink.isStrong())
+        if(this._strongLinkNext &amp;&amp; aLink.isStrong())
             return true;
         else if(!this._strongLinkNext)
             return true;
@@ -608,4 +581,26 @@ class Chain
             this.last = null;
         }
     }
-}
+}</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="CandidateObj.html">CandidateObj</a></li><li><a href="Cell.html">Cell</a></li><li><a href="Chain.html">Chain</a></li><li><a href="House.html">House</a></li><li><a href="Link.html">Link</a></li><li><a href="PairObj.html">PairObj</a></li><li><a href="XWing.html">XWing</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 3.6.6</a> on Fri Dec 18 2020 19:46:37 GMT+0100 (Środkowoeuropejski czas stand.)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>

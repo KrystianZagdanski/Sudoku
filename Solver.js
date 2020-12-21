@@ -427,8 +427,8 @@ Solver.showBoxLine = (showAll = false)=>{
 }
 
 /**
- * Highlights YWing.
- * @param {Boolean} - Show all YWings if true, default false
+ * Highlights Y-Wing.
+ * @param {Boolean} - Show all YWings if true, default false.
  * @returns {Symbol | false} Solver.REMOVE or false.
  */
 Solver.showYWing = (showAll = false)=>{
@@ -692,6 +692,41 @@ Solver.showSashimiXWing = ()=>{
 }
 
 /**
+ * Highlights XY-Chain.
+ * @param {Boolean} - Show all XY Chains if true, default false.
+ * @returns {Symbol | false} Solver.REMOVE or false.
+ */
+Solver.showXYChain = (showAll = false)=>{
+    Solver.candidatesToRemove = [];
+    let XYChains = Solver.findXYChains(cell);
+    XYChains.forEach(chain =>{
+        if(Solver.candidatesToRemove.length > 0 && !showAll)
+            return;
+
+        let elim = Solver.findEliminatedByXYChain(chain);
+        if(elim.length > 0)
+        {
+            Solver.candidatesToRemove = Solver.candidatesToRemove.concat(elim);
+            board.addChain(chain);
+            board.addHighlight(chain.first, Board.COLOR.BLUE);
+            board.addHighlight(chain.last, Board.COLOR.BLUE);
+
+            elim.forEach(candidate=>{
+                board.addHighlight(candidate, Board.COLOR.RED);
+                board.addCellHighlight(candidate, Board.COLOR.RED);
+            });
+        }
+    });
+    if(Solver.candidatesToRemove.length > 0)
+    {
+        console.log("XYChain");
+        return Solver.REMOVE;
+    }
+    else
+        return false;
+}
+
+/**
  * Make one step of solving sudoku.
  * @returns {boolean} false if couldn't do any action else true.
  */
@@ -738,6 +773,8 @@ Solver.step = ()=>{
         Solver.action = Solver.showFinnedXWing();
         if(Solver.action) return true;
         Solver.action = Solver.showSashimiXWing();
+        if(Solver.action) return true;
+        Solver.action = Solver.showXYChain();
         if(Solver.action) return true;
     }
     else if(Solver.action == Solver.SOLVE)
