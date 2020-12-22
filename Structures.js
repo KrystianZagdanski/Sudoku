@@ -394,6 +394,47 @@ class XWing
 }
 
 /**
+ * Represents Fish
+ * @class
+ * @property {number} value - Candidate digit.
+ * @property {Array.<Cell>} cells - Cells of Fish.
+ * @property {"row" | "column"} houseType - Common house type of cells.
+ * @property {Array.<Cell>} fins - Finn Cells of Fish.
+ * @property {Cell} emptyCell - Cell without candidate.
+ */
+class Fish
+{
+    /**
+     * @param  {number} value - Candidate digit.
+     * @param  {Array.<Cell>} cells - Cells of Fish.
+     * @param  {"row" | "column"} houseType - Common house type of cells.
+     * @param  {Array.<House>} eliminationHouses - List of houses where fish can eliminate candidates.
+     * @param  {Array.<Cell>} [fins] - Finn Cells of Fish.
+     * @param  {Cell} [emptyCell] - Cell without candidate.
+     * @constructor
+     */
+    constructor(value, cells, houseType, eliminationHouses, fins, emptyCell)
+    {
+        this.value = value;
+        this.cells = cells;
+        this.houseType = houseType;
+        this.eliminationHouses = eliminationHouses;
+        this.fins = fins || [];
+        this.emptyCell = emptyCell || false;
+    }
+
+    /**
+     * Returns cell of a Fish as CandidateObj.
+     * @param  {number} index - Index of Cell.
+     * @returns {CandidateObj} - CandidateObj
+     */
+    getCandidateObj(index)
+    {
+        return new CandidateObj(this.cells[index], this.value);
+    }
+}
+
+/**
  * Pair of two linked CandidateObj.
  * @class
  * @property {CandidateObj} digitA - Start of a link.

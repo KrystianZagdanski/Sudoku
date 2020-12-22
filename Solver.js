@@ -691,6 +691,209 @@ Solver.showSashimiXWing = ()=>{
     return false;
 }
 
+
+/**
+ * Highlights Swordfish.
+ * @param {Boolean} - Show all Swordfishes if true, default false.
+ * @returns {Symbol | false} Solver.REMOVE or false.
+ */
+Solver.showSwordfish = (showAll = false)=>{
+    Solver.candidatesToRemove = [];
+    let swordfishesRows = Solver.findSwordfish(row);
+    let swordFishesColumns = Solver.findSwordfish(column);
+
+    swordfishesRows.forEach(fish=>{
+        if(Solver.candidatesToRemove.length > 0 && !showAll)
+            return;
+        let elim = Solver.findEliminatedByFish(fish);
+        if(elim.length == 0)
+            return;
+
+        Solver.candidatesToRemove = Solver.candidatesToRemove.concat(elim);
+        let coloredHouses = [];
+        fish.cells.forEach(cell=>{
+            if(coloredHouses.includes(cell[fish.houseType]))
+                return;
+            
+            cell[fish.houseType].cells.forEach(houseCell=>{
+                if(fish.cells.includes(houseCell))
+                {
+                    board.addHighlight(new CandidateObj(houseCell, fish.value));
+                    board.addCellHighlight(new CandidateObj(houseCell, fish.value));
+                }
+                else
+                {
+                    board.addCellHighlight(new CandidateObj(houseCell, fish.value), Board.COLOR.BLUE);
+                }
+            });
+            coloredHouses.push(cell[fish.houseType]);
+        });
+
+        fish.eliminationHouses.forEach(house=>{
+            house.cells.forEach(cell=>{
+                if(!fish.cells.includes(cell) && !coloredHouses.includes(cell[fish.houseType]))
+                    board.addCellHighlight(new CandidateObj(cell, fish.value), Board.COLOR.RED);
+                if(cell.candidates.includes(fish.value) && !coloredHouses.includes(cell[fish.houseType]))
+                {
+                    board.addHighlight(new CandidateObj(cell, fish.value), Board.COLOR.RED);
+                }
+            });
+        });
+        
+
+    });
+
+    swordFishesColumns.forEach(fish=>{
+        if(Solver.candidatesToRemove.length > 0 && !showAll)
+            return;
+        let elim = Solver.findEliminatedByFish(fish);
+        if(elim.length == 0)
+            return;
+
+        Solver.candidatesToRemove = Solver.candidatesToRemove.concat(elim);
+        let coloredHouses = [];
+        fish.cells.forEach(cell=>{
+            if(coloredHouses.includes(cell[fish.houseType]))
+                return;
+            
+            cell[fish.houseType].cells.forEach(houseCell=>{
+                if(fish.cells.includes(houseCell))
+                {
+                    board.addHighlight(new CandidateObj(houseCell, fish.value));
+                    board.addCellHighlight(new CandidateObj(houseCell, fish.value));
+                }
+                else
+                {
+                    board.addCellHighlight(new CandidateObj(houseCell, fish.value), Board.COLOR.BLUE);
+                }
+            });
+            coloredHouses.push(cell[fish.houseType]);
+        });
+
+        fish.eliminationHouses.forEach(house=>{
+            house.cells.forEach(cell=>{
+                if(!fish.cells.includes(cell) && !coloredHouses.includes(cell[fish.houseType]))
+                    board.addCellHighlight(new CandidateObj(cell, fish.value), Board.COLOR.RED);
+                if(cell.candidates.includes(fish.value) && !coloredHouses.includes(cell[fish.houseType]))
+                {
+                    board.addHighlight(new CandidateObj(cell, fish.value), Board.COLOR.RED);
+                }
+            });
+        });
+        
+
+    });
+
+    if(Solver.candidatesToRemove.length > 0)
+    {
+        console.log("Swordfish");
+        return Solver.REMOVE;
+    }
+    else
+        return false;
+}
+
+/**
+ * Highlights Jellyfish.
+ * @param {Boolean} - Show all Swordfishes if true, default false.
+ * @returns {Symbol | false} Solver.REMOVE or false.
+ */
+Solver.showJellyfish = (showAll = false)=>{
+    Solver.candidatesToRemove = [];
+    let jellyfishesRows = Solver.findJellyfish(row);
+    let jellyFishesColumns = Solver.findJellyfish(column);
+
+    jellyfishesRows.forEach(fish=>{
+        if(Solver.candidatesToRemove.length > 0 && !showAll)
+            return;
+        let elim = Solver.findEliminatedByFish(fish);
+        if(elim.length == 0)
+            return;
+
+        Solver.candidatesToRemove = Solver.candidatesToRemove.concat(elim);
+        let coloredHouses = [];
+        fish.cells.forEach(cell=>{
+            if(coloredHouses.includes(cell[fish.houseType]))
+                return;
+            
+            cell[fish.houseType].cells.forEach(houseCell=>{
+                if(fish.cells.includes(houseCell))
+                {
+                    board.addHighlight(new CandidateObj(houseCell, fish.value));
+                    board.addCellHighlight(new CandidateObj(houseCell, fish.value));
+                }
+                else
+                {
+                    board.addCellHighlight(new CandidateObj(houseCell, fish.value), Board.COLOR.BLUE);
+                }
+            });
+            coloredHouses.push(cell[fish.houseType]);
+        });
+
+        fish.eliminationHouses.forEach(house=>{
+            house.cells.forEach(cell=>{
+                if(!fish.cells.includes(cell) && !coloredHouses.includes(cell[fish.houseType]))
+                    board.addCellHighlight(new CandidateObj(cell, fish.value), Board.COLOR.RED);
+                if(cell.candidates.includes(fish.value) && !coloredHouses.includes(cell[fish.houseType]))
+                {
+                    board.addHighlight(new CandidateObj(cell, fish.value), Board.COLOR.RED);
+                }
+            });
+        });
+        
+
+    });
+
+    jellyFishesColumns.forEach(fish=>{
+        if(Solver.candidatesToRemove.length > 0 && !showAll)
+            return;
+        let elim = Solver.findEliminatedByFish(fish);
+        if(elim.length == 0)
+            return;
+
+        Solver.candidatesToRemove = Solver.candidatesToRemove.concat(elim);
+        let coloredHouses = [];
+        fish.cells.forEach(cell=>{
+            if(coloredHouses.includes(cell[fish.houseType]))
+                return;
+            
+            cell[fish.houseType].cells.forEach(houseCell=>{
+                if(fish.cells.includes(houseCell))
+                {
+                    board.addHighlight(new CandidateObj(houseCell, fish.value));
+                    board.addCellHighlight(new CandidateObj(houseCell, fish.value));
+                }
+                else
+                {
+                    board.addCellHighlight(new CandidateObj(houseCell, fish.value), Board.COLOR.BLUE);
+                }
+            });
+            coloredHouses.push(cell[fish.houseType]);
+        });
+
+        fish.eliminationHouses.forEach(house=>{
+            house.cells.forEach(cell=>{
+                if(!fish.cells.includes(cell) && !coloredHouses.includes(cell[fish.houseType]))
+                    board.addCellHighlight(new CandidateObj(cell, fish.value), Board.COLOR.RED);
+                if(cell.candidates.includes(fish.value) && !coloredHouses.includes(cell[fish.houseType]))
+                {
+                    board.addHighlight(new CandidateObj(cell, fish.value), Board.COLOR.RED);
+                }
+            });
+        });
+        
+
+    });
+
+    if(Solver.candidatesToRemove.length > 0)
+    {
+        console.log("Jellyfish");
+        return Solver.REMOVE;
+    }
+    else
+        return false;
+}
+
 /**
  * Highlights XY-Chain.
  * @param {Boolean} - Show all XY Chains if true, default false.
@@ -769,6 +972,10 @@ Solver.step = ()=>{
         Solver.action = Solver.showYWing(); // NEW
         if(Solver.action) return true;
         Solver.action = Solver.showXWing();
+        if(Solver.action) return true;
+        Solver.action = Solver.showSwordfish();
+        if(Solver.action) return true;
+        Solver.action = Solver.showJellyfish();
         if(Solver.action) return true;
         Solver.action = Solver.showFinnedXWing();
         if(Solver.action) return true;
