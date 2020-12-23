@@ -106,13 +106,13 @@ Solver.findNaked = (aHouseArr)=>{
     {
         temp = Solver.findNakedPairs(aHouseArr[i]);
         if(temp.length > 0)
-            naked.pairs = temp;
+            naked.pairs = naked.pairs.concat(temp);
         temp = Solver.findNakedTriples(aHouseArr[i]);
         if(temp.length > 0)
-            naked.triples = temp;
+            naked.triples = naked.triples.concat(temp);
         temp = Solver.findNakedQuads(aHouseArr[i]);
         if(temp.length > 0)
-            naked.quads = temp;
+            naked.quads = naked.quads.concat(temp);
     }
     return naked;
 }

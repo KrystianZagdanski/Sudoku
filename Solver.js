@@ -957,19 +957,19 @@ Solver.step = ()=>{
         Solver.action = Solver.showHiddenSingles();
         if(Solver.action) return true;
         //Solver.action = Solver.showTwoPairElimination();
-        Solver.action = Solver.showNakedPairs(); // NEW
+        Solver.action = Solver.showNakedPairs();
         if(Solver.action) return true;
-        Solver.action = Solver.showNakedTriples(); // NEW
+        Solver.action = Solver.showNakedTriples();
         if(Solver.action) return true;
-        Solver.action = Solver.showNakedQuad(); // NEW
+        Solver.action = Solver.showNakedQuad();
         if(Solver.action) return true;
-        Solver.action = Solver.showHiddenPairs(); // NEW
+        Solver.action = Solver.showHiddenPairs();
         if(Solver.action) return true;
-        Solver.action = Solver.showHiddenTriples(); // NEW
+        Solver.action = Solver.showHiddenTriples();
         if(Solver.action) return true;
-        Solver.action = Solver.showBoxLine(); // NEW
+        Solver.action = Solver.showBoxLine();
         if(Solver.action) return true;
-        Solver.action = Solver.showYWing(); // NEW
+        Solver.action = Solver.showYWing();
         if(Solver.action) return true;
         Solver.action = Solver.showXWing();
         if(Solver.action) return true;

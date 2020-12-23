@@ -112,8 +112,10 @@ Solver.findEliminatedByYWing = (aChain)=>{
  * @param {Array.<PairObj>} pairs - list of pairs
  * @param {Chain} chain - current chain
  * @param {Array.<Chain>} - list of found chains
+ * @returns {Array.<Chain>} [Chain,...]
  */
-Solver.findChain = (start, startIndex, pairs, chain = new Chain(), chains = [])=>{
+Solver.findChain = (start, startIndex, pairs_, chain = new Chain(), chains = [])=>{
+    let pairs = pairs_.slice(0);
     if(chain.first == null)
     {
         pairs.splice(pairs.indexOf(start), 1);
@@ -191,12 +193,35 @@ Solver.findEliminatedByXYChain = (aChain)=>{
 
     if(commonHouses.length == 0)
     {
+        let Ah = [A.cell.row.cells, A.cell.column.cells];
+        let Bh = [B.cell.row.cells, B.cell.column.cells];
         let ArBc = A.cell.row.cells[B.cell.column.index];
         let AcBr = A.cell.column.cells[B.cell.row.index];
         if(ArBc.candidates.includes(A.value) && !aChain.isPartOfChain(ArBc))
             candidatesForElimination.push(new CandidateObj(ArBc, A.value));
         if(AcBr.candidates.includes(A.value) && !aChain.isPartOfChain(AcBr))
             candidatesForElimination.push(new CandidateObj(AcBr, A.value));
+
+        Ah.forEach(cells=>{
+            cells.forEach(cell=>{
+                if(cell.block == B.cell.block && cell.candidates.includes(A.value) &&
+                cell != ArBc && cell != AcBr && !aChain.isPartOfChain(cell))
+                {
+                    candidatesForElimination.push(new CandidateObj(cell, A.value));
+                }
+            });
+        });
+
+        Bh.forEach(cells=>{
+            cells.forEach(cell=>{
+                if(cell.block == A.cell.block && cell.candidates.includes(A.value) &&
+                cell != ArBc && cell != AcBr && !aChain.isPartOfChain(cell))
+                {
+                    candidatesForElimination.push(new CandidateObj(cell, A.value));
+                }
+            });
+        });
+        
     }
     else
     {
