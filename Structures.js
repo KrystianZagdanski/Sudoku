@@ -41,6 +41,22 @@ class Cell
     }
 
     /**
+     * Return copy of this cell
+     * @returns {Cell}
+     */
+    copy()
+    {
+        let newCell = new Cell(this.id);
+        newCell.value = this.value;
+        newCell.isGiven = this.isGiven;
+        newCell.row = this.row;
+        newCell.column = this.column;
+        newCell.block = this.block;
+        newCell._candidates = this._candidates.slice(0);
+        return newCell;
+    }
+
+    /**
      * Take Cell and returns true if it have the same candidates.
      * @param {Cell} Cell - Cell objesct.
      * @returns {true | false} true|false
@@ -78,6 +94,7 @@ class Cell
         {
             this._candidates.push(candidates);
         }
+        this._candidates.sort((a,b)=>{return a-b;});
     }
 
     /**

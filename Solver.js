@@ -930,6 +930,26 @@ Solver.showXYChain = (showAll = false)=>{
 }
 
 /**
+ * Highlights first correct value from backtrack.
+ * @returns {Symbol | false} Solver.SOLVE or false.
+ */
+Solver.showBackTracked = ()=>{
+    Solver.solutions = [];
+    let cellArr = [];
+    row.forEach(r=>{cellArr = cellArr.concat(r.cells)});
+    let result = Solver.backTrack(cellArr);
+    if(result)
+    {
+        Solver.solutions.push(result);
+        board.addHighlight(result);
+        console.log("BackTrack");
+        return Solver.SOLVE;
+    }
+    return false;
+
+}
+
+/**
  * Make one step of solving sudoku.
  * @returns {boolean} false if couldn't do any action else true.
  */
@@ -956,7 +976,6 @@ Solver.step = ()=>{
         if(Solver.action) return true;
         Solver.action = Solver.showHiddenSingles();
         if(Solver.action) return true;
-        //Solver.action = Solver.showTwoPairElimination();
         Solver.action = Solver.showNakedPairs();
         if(Solver.action) return true;
         Solver.action = Solver.showNakedTriples();
@@ -982,6 +1001,9 @@ Solver.step = ()=>{
         Solver.action = Solver.showSashimiXWing();
         if(Solver.action) return true;
         Solver.action = Solver.showXYChain();
+        if(Solver.action) return true;
+
+        Solver.action = Solver.showBackTracked();
         if(Solver.action) return true;
     }
     else if(Solver.action == Solver.SOLVE)
