@@ -12,7 +12,7 @@ function loadSave(e)
         {
             for(let b = 0; b < 9; b++)
             {
-                if(contents[index] == 0)
+                if(contents[index] == 0 || contents[index] == ".")
                 {
                     cell[b][a].value = null;
                     cell[b][a].isGiven = false;

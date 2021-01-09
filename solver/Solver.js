@@ -46,8 +46,8 @@ Solver.showNakedSingles = ()=>{
     {
         nakedSingles.forEach(obj=>{board.addHighlight(obj);});
         Solver.solutions = nakedSingles;
-        console.log("Naked Single");
-        if(Solver.level < 1) Solver.level = 1;
+        //console.log("Naked Single");
+        Solver.dificultyScore[0] += 1;
         return Solver.SOLVE;
     }
     return false;
@@ -63,8 +63,8 @@ Solver.showHiddenSingles = ()=>{
     {
         hiddenSinges.forEach(obj=>{board.addHighlight(obj);});
         Solver.solutions = hiddenSinges;
-        console.log("Hidden Single");
-        if(Solver.level < 1) Solver.level = 1;
+        //console.log("Hidden Single");
+        Solver.dificultyScore[1] += 1;
         return Solver.SOLVE;
     }
     return false;
@@ -106,99 +106,8 @@ Solver.showNakedPairs = (showAll = false)=>{
     }
     if(Solver.candidatesToRemove.length > 0)
     {
-        console.log("Naked Pair");
-        if(Solver.level < 1) Solver.level = 1;
-        return Solver.REMOVE;
-    }
-    else
-        return false;
-}
-
-/**
- * Highlights naked triple and candidates it can eliminate.
- * @param {Boolean} - Show all triples if true, default false
- * @returns {Symbol | false} Solver.REMOVE or false.
- */
-Solver.showNakedTriples = (showAll = false)=>{
-    let houses = {"row":row, "column":column, "block":block};
-    Solver.candidatesToRemove = [];
-    for(let houseType in houses)
-    {
-        let naked = Solver.findNaked(houses[houseType]);
-        let foundElimination = false;
-        if(naked.triples.length > 0)
-        {
-            naked.triples.forEach(triple=>{
-                if(foundElimination && !showAll)
-                    return;
-                Solver.candidatesToRemove = Solver.candidatesToRemove.concat(Solver.findEliminatedByNaked(triple, triple[0][houseType]));
-                if(Solver.candidatesToRemove.length > 0)
-                {
-                    triple.forEach(cell=>{
-                        board.addHighlight(new CandidateObj(cell, cell.candidates[0]));
-                        board.addHighlight(new CandidateObj(cell, cell.candidates[1]));
-                        board.addHighlight(new CandidateObj(cell, cell.candidates[2]));
-                    });
-                    Solver.candidatesToRemove.forEach(cObj=>{
-                        board.addHighlight(cObj, Board.COLOR.RED);
-                    });
-                    foundElimination = true;
-                }
-            });  
-        }
-        if(foundElimination && !showAll)
-            break;
-    }
-    if(Solver.candidatesToRemove.length > 0)
-    {
-        console.log("Naked Triple");
-        if(Solver.level < 2) Solver.level = 2;
-        return Solver.REMOVE;
-    }
-    else
-        return false;
-}
-
-/**
- * Highlights naked quad and candidates it can eliminate.
- * @param {Boolean} - Show all quads if true, default false
- * @returns {Symbol | false} Solver.REMOVE or false.
- */
-Solver.showNakedQuad = (showAll = false)=>{
-    let houses = {"row":row, "column":column, "block":block};
-    Solver.candidatesToRemove = [];
-    for(let houseType in houses)
-    {
-        let naked = Solver.findNaked(houses[houseType]);
-        let foundElimination = false;
-        if(naked.quads.length > 0)
-        {
-            naked.quads.forEach(quad=>{
-                if(foundElimination && !showAll)
-                    return;
-                Solver.candidatesToRemove = Solver.candidatesToRemove.concat(Solver.findEliminatedByNaked(quad, quad[0][houseType]));
-                if(Solver.candidatesToRemove.length > 0)
-                {
-                    quad.forEach(cell=>{
-                        board.addHighlight(new CandidateObj(cell, cell.candidates[0]));
-                        board.addHighlight(new CandidateObj(cell, cell.candidates[1]));
-                        board.addHighlight(new CandidateObj(cell, cell.candidates[2]));
-                        board.addHighlight(new CandidateObj(cell, cell.candidates[3]));
-                    });
-                    Solver.candidatesToRemove.forEach(cObj=>{
-                        board.addHighlight(cObj, Board.COLOR.RED);
-                    });
-                    foundElimination = true;
-                }
-            });  
-        }
-        if(foundElimination && !showAll)
-            break;
-    }
-    if(Solver.candidatesToRemove.length > 0)
-    {
-        console.log("Naked Quad");
-        if(Solver.level < 2) Solver.level = 2;
+        //console.log("Naked Pair");
+        Solver.dificultyScore[2] += 1;
         return Solver.REMOVE;
     }
     else
@@ -241,54 +150,8 @@ Solver.showHiddenPairs = (showAll = false)=>{
     }
     if(Solver.candidatesToRemove.length > 0)
     {
-        console.log("Hidden Pair");
-        if(Solver.level < 1) Solver.level = 1;
-        return Solver.REMOVE;
-    }
-    else
-        return false;
-}
-
-/**
- * Highlights hidden triple and candidates it can eliminate.
- * @param {Boolean} - Show all pairs if true, default false
- * @returns {Symbol | false} Solver.REMOVE or false.
- */
-Solver.showHiddenTriples = (showAll = false)=>{
-    let houses = {"row":row, "column":column, "block":block};
-    Solver.candidatesToRemove = [];
-    for(let houseType in houses)
-    {
-        let hidden = Solver.findHidden(houses[houseType]);
-        let foundElimination = false;
-        if(hidden.triples.length > 0)
-        {
-            hidden.triples.forEach(triple=>{
-                if(foundElimination && !showAll)
-                    return;
-                Solver.candidatesToRemove = Solver.candidatesToRemove.concat(Solver.findEliminatedByHidden(triple));
-                if(Solver.candidatesToRemove.length > 0)
-                {
-                    for(let i = 0; i < triple.cells.length; i++)
-                    {
-                        board.addHighlight(new CandidateObj(triple.cells[i], triple.digits[0]));
-                        board.addHighlight(new CandidateObj(triple.cells[i], triple.digits[1]));
-                        board.addHighlight(new CandidateObj(triple.cells[i], triple.digits[2]));
-                    }
-                    Solver.candidatesToRemove.forEach(cObj=>{
-                        board.addHighlight(cObj, Board.COLOR.RED);
-                    });
-                    foundElimination = true;
-                }
-            });  
-        }
-        if(foundElimination && !showAll)
-            break;
-    }
-    if(Solver.candidatesToRemove.length > 0)
-    {
-        console.log("Hidden Triple");
-        if(Solver.level < 2) Solver.level = 2;
+        //console.log("Hidden Pair");
+        Solver.dificultyScore[3] += 2;
         return Solver.REMOVE;
     }
     else
@@ -426,8 +289,145 @@ Solver.showBoxLine = (showAll = false)=>{
     }
     if(Solver.candidatesToRemove.length > 0)
     {
-        console.log("Box Line");
-        if(Solver.level < 1) Solver.level = 1;
+        //console.log("Box Line");
+        Solver.dificultyScore[4] += 5;
+        return Solver.REMOVE;
+    }
+    else
+        return false;
+}
+
+/**
+ * Highlights naked triple and candidates it can eliminate.
+ * @param {Boolean} - Show all triples if true, default false
+ * @returns {Symbol | false} Solver.REMOVE or false.
+ */
+Solver.showNakedTriples = (showAll = false)=>{
+    let houses = {"row":row, "column":column, "block":block};
+    Solver.candidatesToRemove = [];
+    for(let houseType in houses)
+    {
+        let naked = Solver.findNaked(houses[houseType]);
+        let foundElimination = false;
+        if(naked.triples.length > 0)
+        {
+            naked.triples.forEach(triple=>{
+                if(foundElimination && !showAll)
+                    return;
+                Solver.candidatesToRemove = Solver.candidatesToRemove.concat(Solver.findEliminatedByNaked(triple, triple[0][houseType]));
+                if(Solver.candidatesToRemove.length > 0)
+                {
+                    triple.forEach(cell=>{
+                        board.addHighlight(new CandidateObj(cell, cell.candidates[0]));
+                        board.addHighlight(new CandidateObj(cell, cell.candidates[1]));
+                        board.addHighlight(new CandidateObj(cell, cell.candidates[2]));
+                    });
+                    Solver.candidatesToRemove.forEach(cObj=>{
+                        board.addHighlight(cObj, Board.COLOR.RED);
+                    });
+                    foundElimination = true;
+                }
+            });  
+        }
+        if(foundElimination && !showAll)
+            break;
+    }
+    if(Solver.candidatesToRemove.length > 0)
+    {
+        //console.log("Naked Triple");
+        Solver.dificultyScore[5] += 10;
+        return Solver.REMOVE;
+    }
+    else
+        return false;
+}
+
+/**
+ * Highlights hidden triple and candidates it can eliminate.
+ * @param {Boolean} - Show all pairs if true, default false
+ * @returns {Symbol | false} Solver.REMOVE or false.
+ */
+Solver.showHiddenTriples = (showAll = false)=>{
+    let houses = {"row":row, "column":column, "block":block};
+    Solver.candidatesToRemove = [];
+    for(let houseType in houses)
+    {
+        let hidden = Solver.findHidden(houses[houseType]);
+        let foundElimination = false;
+        if(hidden.triples.length > 0)
+        {
+            hidden.triples.forEach(triple=>{
+                if(foundElimination && !showAll)
+                    return;
+                Solver.candidatesToRemove = Solver.candidatesToRemove.concat(Solver.findEliminatedByHidden(triple));
+                if(Solver.candidatesToRemove.length > 0)
+                {
+                    for(let i = 0; i < triple.cells.length; i++)
+                    {
+                        board.addHighlight(new CandidateObj(triple.cells[i], triple.digits[0]));
+                        board.addHighlight(new CandidateObj(triple.cells[i], triple.digits[1]));
+                        board.addHighlight(new CandidateObj(triple.cells[i], triple.digits[2]));
+                    }
+                    Solver.candidatesToRemove.forEach(cObj=>{
+                        board.addHighlight(cObj, Board.COLOR.RED);
+                    });
+                    foundElimination = true;
+                }
+            });  
+        }
+        if(foundElimination && !showAll)
+            break;
+    }
+    if(Solver.candidatesToRemove.length > 0)
+    {
+        //console.log("Hidden Triple");
+        Solver.dificultyScore[6] += 15;
+        return Solver.REMOVE;
+    }
+    else
+        return false;
+}
+
+/**
+ * Highlights naked quad and candidates it can eliminate.
+ * @param {Boolean} - Show all quads if true, default false
+ * @returns {Symbol | false} Solver.REMOVE or false.
+ */
+Solver.showNakedQuad = (showAll = false)=>{
+    let houses = {"row":row, "column":column, "block":block};
+    Solver.candidatesToRemove = [];
+    for(let houseType in houses)
+    {
+        let naked = Solver.findNaked(houses[houseType]);
+        let foundElimination = false;
+        if(naked.quads.length > 0)
+        {
+            naked.quads.forEach(quad=>{
+                if(foundElimination && !showAll)
+                    return;
+                Solver.candidatesToRemove = Solver.candidatesToRemove.concat(Solver.findEliminatedByNaked(quad, quad[0][houseType]));
+                if(Solver.candidatesToRemove.length > 0)
+                {
+                    quad.forEach(cell=>{
+                        board.addHighlight(new CandidateObj(cell, cell.candidates[0]));
+                        board.addHighlight(new CandidateObj(cell, cell.candidates[1]));
+                        board.addHighlight(new CandidateObj(cell, cell.candidates[2]));
+                        board.addHighlight(new CandidateObj(cell, cell.candidates[3]));
+                    });
+                    Solver.candidatesToRemove.forEach(cObj=>{
+                        board.addHighlight(cObj, Board.COLOR.RED);
+                    });
+                    foundElimination = true;
+                }
+            });  
+        }
+        if(foundElimination && !showAll)
+            break;
+    }
+    if(Solver.candidatesToRemove.length > 0)
+    {
+        //console.log("Naked Quad");
+        Solver.dificultyScore[7] += 15;
         return Solver.REMOVE;
     }
     else
@@ -462,8 +462,8 @@ Solver.showYWing = (showAll = false)=>{
     });
     if(Solver.candidatesToRemove.length > 0)
     {
-        console.log("YWing");
-        if(Solver.level < 2) Solver.level = 2;
+        //console.log("YWing");
+        Solver.dificultyScore[8] += 15;
         return Solver.REMOVE;
     }
     else
@@ -572,137 +572,12 @@ Solver.showXWing = ()=>{
 
     if(Solver.candidatesToRemove.length > 0)
     {
-        console.log("X-Wing");
-        if(Solver.level < 2) Solver.level = 2;
+        //console.log("X-Wing");
+        Solver.dificultyScore[9] += 15;
         return Solver.REMOVE;
     }
     return false;
 }
-
-/**
- * Highlights Finned X-Fing its houses and candidates eliminatet by it.
- * @returns {Symbol | false} Solver.REMOVE or false.
- */
-Solver.showFinnedXWing = ()=>{
-    Solver.candidatesToRemove = [];
-    let foundFinnedXWing = Solver.findFinnedXWing(row, column);
-    if(!foundFinnedXWing) return false;
-
-    let properFinnedXWingFound = false;
-
-    foundFinnedXWing.forEach(fXWing=>{
-        if(properFinnedXWingFound) return;
-
-        for(let pi = 0; pi < 2; pi++)
-        {
-            if(fXWing.cells[pi+2].commonHouse(fXWing.fins[0]).includes("block"))
-            {
-                let func = (cell)=>{
-                    if(cell.commonHouse(fXWing.cells[pi+2]).includes("block") && cell.candidates.includes(fXWing.value) &&
-                     cell != fXWing.cells[pi+2] && cell != fXWing.cells[pi])
-                        {
-                            properFinnedXWingFound = true;
-                            let c = new CandidateObj(cell, fXWing.value);
-                            board.addHighlight(c, Board.COLOR.RED);
-                            board.addCellHighlight(c, Board.COLOR.RED);
-                            Solver.candidatesToRemove.push(c);
-                        }
-                }
-                if(fXWing.houseType == "row")
-                    fXWing.cells[pi+2].column.cells.forEach(func);
-                else
-                    fXWing.cells[pi+2].row.cells.forEach(func);
-
-                if(properFinnedXWingFound)
-                {
-                    board.addHighlight(fXWing.getCandidateObj(0));
-                    board.addHighlight(fXWing.getCandidateObj(1));
-                    board.addHighlight(fXWing.getCandidateObj(2));
-                    board.addHighlight(fXWing.getCandidateObj(3));
-                    board.addCellHighlight(fXWing.getCandidateObj(0));
-                    board.addCellHighlight(fXWing.getCandidateObj(1));
-                    board.addCellHighlight(fXWing.getCandidateObj(2));
-                    board.addCellHighlight(fXWing.getCandidateObj(3));
-
-                    fXWing.fins.forEach(fin=>{
-                        board.addCellHighlight(new CandidateObj(fin, fXWing.value), Board.COLOR.BLUE);
-                    });
-                }
-            }
-        }
-        
-    });
-
-    if(Solver.candidatesToRemove.length > 0)
-    {
-        console.log("Finned X-Wing");
-        if(Solver.level < 3) Solver.level = 3;
-        return Solver.REMOVE;
-    }
-    return false;
-}
-
-/**
- * Highlights Sashimi X-Fing its houses and candidates eliminatet by it.
- * @returns {Symbol | false} Solver.REMOVE or false;
- */
-Solver.showSashimiXWing = ()=>{
-    Solver.candidatesToRemove = [];
-    let foundSashimiXWing = Solver.findSashimiXWing(row, column);
-    if(!foundSashimiXWing) return false;
-
-    let foundXwing = false;
-
-    foundSashimiXWing.forEach(xwing=>{
-        if(foundXwing) return;
-
-        let eliminateIn;
-        if(xwing.houseType == "row")
-            eliminateIn = "column";
-        else
-            eliminateIn = "row";
-
-        xwing.emptyCell.block.cells.forEach(cell=>{
-            if(!cell.candidates.includes(xwing.value)) return;
-
-            if(!xwing.fins.includes(cell) && !xwing.cells.includes(cell) && cell.commonHouse(xwing.emptyCell).includes(eliminateIn))
-            {
-                foundXwing = true;
-                let c = new CandidateObj(cell, xwing.value);
-                Solver.candidatesToRemove.push(c);
-                board.addHighlight(c, Board.COLOR.RED);
-                board.addCellHighlight(c, Board.COLOR.RED);
-            }
-        });
-        if(foundXwing)
-        {
-            board.addHighlight(xwing.getCandidateObj(0));
-            board.addHighlight(xwing.getCandidateObj(1));
-            board.addHighlight(xwing.getCandidateObj(2));
-            xwing.fins.forEach(fin=>{
-                board.addHighlight(new CandidateObj(fin, xwing.value));
-            });
-            
-
-            board.addCellHighlight(xwing.getCandidateObj(0));
-            board.addCellHighlight(xwing.getCandidateObj(1));
-            board.addCellHighlight(xwing.getCandidateObj(2));
-            board.addCellHighlight(new CandidateObj(xwing.emptyCell, xwing.value));
-            xwing.fins.forEach(fin=>{
-                board.addCellHighlight(new CandidateObj(fin, xwing.value), Board.COLOR.BLUE);
-            });
-        }
-    });
-    
-    if(Solver.candidatesToRemove.length > 0)
-    {
-        console.log("Sashimi X-Wing");
-        if(Solver.level < 3) Solver.level = 3;
-        return Solver.REMOVE;
-    }
-    return false;
-}
-
 
 /**
  * Highlights Swordfish.
@@ -795,11 +670,10 @@ Solver.showSwordfish = (showAll = false)=>{
         
 
     });
-
     if(Solver.candidatesToRemove.length > 0)
     {
-        console.log("Swordfish");
-        if(Solver.level < 3) Solver.level = 3;
+        //console.log("Swordfish");
+        Solver.dificultyScore[10] += 50;
         return Solver.REMOVE;
     }
     else
@@ -897,15 +771,138 @@ Solver.showJellyfish = (showAll = false)=>{
         
 
     });
-
     if(Solver.candidatesToRemove.length > 0)
     {
-        console.log("Jellyfish");
-        if(Solver.level < 3) Solver.level = 3;
+        //console.log("Jellyfish");
+        Solver.dificultyScore[11] += 50;
         return Solver.REMOVE;
     }
     else
         return false;
+}
+
+/**
+ * Highlights Finned X-Fing its houses and candidates eliminatet by it.
+ * @returns {Symbol | false} Solver.REMOVE or false.
+ */
+Solver.showFinnedXWing = ()=>{
+    Solver.candidatesToRemove = [];
+    let foundFinnedXWing = Solver.findFinnedXWing(row, column);
+    if(!foundFinnedXWing) return false;
+
+    let properFinnedXWingFound = false;
+
+    foundFinnedXWing.forEach(fXWing=>{
+        if(properFinnedXWingFound) return;
+
+        for(let pi = 0; pi < 2; pi++)
+        {
+            if(fXWing.cells[pi+2].commonHouse(fXWing.fins[0]).includes("block"))
+            {
+                let func = (cell)=>{
+                    if(cell.commonHouse(fXWing.cells[pi+2]).includes("block") && cell.candidates.includes(fXWing.value) &&
+                     cell != fXWing.cells[pi+2] && cell != fXWing.cells[pi])
+                        {
+                            properFinnedXWingFound = true;
+                            let c = new CandidateObj(cell, fXWing.value);
+                            board.addHighlight(c, Board.COLOR.RED);
+                            board.addCellHighlight(c, Board.COLOR.RED);
+                            Solver.candidatesToRemove.push(c);
+                        }
+                }
+                if(fXWing.houseType == "row")
+                    fXWing.cells[pi+2].column.cells.forEach(func);
+                else
+                    fXWing.cells[pi+2].row.cells.forEach(func);
+
+                if(properFinnedXWingFound)
+                {
+                    board.addHighlight(fXWing.getCandidateObj(0));
+                    board.addHighlight(fXWing.getCandidateObj(1));
+                    board.addHighlight(fXWing.getCandidateObj(2));
+                    board.addHighlight(fXWing.getCandidateObj(3));
+                    board.addCellHighlight(fXWing.getCandidateObj(0));
+                    board.addCellHighlight(fXWing.getCandidateObj(1));
+                    board.addCellHighlight(fXWing.getCandidateObj(2));
+                    board.addCellHighlight(fXWing.getCandidateObj(3));
+
+                    fXWing.fins.forEach(fin=>{
+                        board.addCellHighlight(new CandidateObj(fin, fXWing.value), Board.COLOR.BLUE);
+                    });
+                }
+            }
+        }
+        
+    });
+
+    if(Solver.candidatesToRemove.length > 0)
+    {
+        //console.log("Finned X-Wing");
+        Solver.dificultyScore[12] += 55;
+        return Solver.REMOVE;
+    }
+    return false;
+}
+
+/**
+ * Highlights Sashimi X-Fing its houses and candidates eliminatet by it.
+ * @returns {Symbol | false} Solver.REMOVE or false;
+ */
+Solver.showSashimiXWing = ()=>{
+    Solver.candidatesToRemove = [];
+    let foundSashimiXWing = Solver.findSashimiXWing(row, column);
+    if(!foundSashimiXWing) return false;
+
+    let foundXwing = false;
+
+    foundSashimiXWing.forEach(xwing=>{
+        if(foundXwing) return;
+
+        let eliminateIn;
+        if(xwing.houseType == "row")
+            eliminateIn = "column";
+        else
+            eliminateIn = "row";
+
+        xwing.emptyCell.block.cells.forEach(cell=>{
+            if(!cell.candidates.includes(xwing.value)) return;
+
+            if(!xwing.fins.includes(cell) && !xwing.cells.includes(cell) && cell.commonHouse(xwing.emptyCell).includes(eliminateIn))
+            {
+                foundXwing = true;
+                let c = new CandidateObj(cell, xwing.value);
+                Solver.candidatesToRemove.push(c);
+                board.addHighlight(c, Board.COLOR.RED);
+                board.addCellHighlight(c, Board.COLOR.RED);
+            }
+        });
+        if(foundXwing)
+        {
+            board.addHighlight(xwing.getCandidateObj(0));
+            board.addHighlight(xwing.getCandidateObj(1));
+            board.addHighlight(xwing.getCandidateObj(2));
+            xwing.fins.forEach(fin=>{
+                board.addHighlight(new CandidateObj(fin, xwing.value));
+            });
+            
+
+            board.addCellHighlight(xwing.getCandidateObj(0));
+            board.addCellHighlight(xwing.getCandidateObj(1));
+            board.addCellHighlight(xwing.getCandidateObj(2));
+            board.addCellHighlight(new CandidateObj(xwing.emptyCell, xwing.value));
+            xwing.fins.forEach(fin=>{
+                board.addCellHighlight(new CandidateObj(fin, xwing.value), Board.COLOR.BLUE);
+            });
+        }
+    });
+    
+    if(Solver.candidatesToRemove.length > 0)
+    {
+        //console.log("Sashimi X-Wing");
+        Solver.dificultyScore[13] += 55;
+        return Solver.REMOVE;
+    }
+    return false;
 }
 
 /**
@@ -936,8 +933,8 @@ Solver.showXYChain = (showAll = false)=>{
     });
     if(Solver.candidatesToRemove.length > 0)
     {
-        console.log("XYChain");
-        if(Solver.level < 3) Solver.level = 3;
+        //console.log("XYChain");
+        Solver.dificultyScore[14] += 60;
         return Solver.REMOVE;
     }
     else
@@ -958,7 +955,6 @@ Solver.showBackTracked = ()=>{
         Solver.solutions.push(result);
         board.addHighlight(result);
         console.log("BackTrack");
-        if(Solver.level < 4) Solver.level = 4;
         return Solver.SOLVE;
     }
     return false;
@@ -995,15 +991,15 @@ Solver.step = (validate = false)=>{
         if(Solver.action) return true;
         Solver.action = Solver.showNakedPairs();
         if(Solver.action) return true;
-        Solver.action = Solver.showNakedTriples();
-        if(Solver.action) return true;
-        Solver.action = Solver.showNakedQuad();
-        if(Solver.action) return true;
         Solver.action = Solver.showHiddenPairs();
+        if(Solver.action) return true;
+        Solver.action = Solver.showBoxLine();
+        if(Solver.action) return true;
+        Solver.action = Solver.showNakedTriples();
         if(Solver.action) return true;
         Solver.action = Solver.showHiddenTriples();
         if(Solver.action) return true;
-        Solver.action = Solver.showBoxLine();
+        Solver.action = Solver.showNakedQuad();
         if(Solver.action) return true;
         Solver.action = Solver.showYWing();
         if(Solver.action) return true;
@@ -1041,7 +1037,7 @@ Solver.step = (validate = false)=>{
     }
     else
     {
-        console.log("Solution not found!");
+        //console.log("Solution not found!");
         Solver.action = Solver.FIND_SOLUTION;
     }
 
@@ -1053,6 +1049,7 @@ Solver.step = (validate = false)=>{
  * @param {Boolean} - Will not use backtrack if true
  */
 Solver.solve = (validate = false)=>{
+    Solver.dificultyScore.forEach((s,i)=>{Solver.dificultyScore[i] = 0});
     while(Solver.step(validate));
     let solved = true;
     cell.forEach(row=>{
@@ -1061,37 +1058,5 @@ Solver.solve = (validate = false)=>{
                 solved = false;
         });
     });
-    
     return solved;
-}
-
-/**
- * Return dificulty of current game.
- * @returns {number} 1-4
- */
-Solver.rate = ()=>{
-    Solver.level = 0;
-    // save game
-    let gameCopy = [];
-    cell.forEach((arr,i)=>{
-        gameCopy[i] = [];
-        arr.forEach(cell=>{
-            gameCopy[i].push(cell.value);
-        });
-    });
-    while(Solver.step());
-    Generator.clear();
-    // restore game
-    for(let a = 0; a < 9; a++)
-    {
-        for(let b = 0; b < 9; b++)
-        {
-            if(gameCopy[a][b] != null)
-                cell[a][b].given(gameCopy[a][b]);
-            else
-                cell[a][b].value = gameCopy[a][b];
-
-        }
-    }
-    return Solver.level;
 }

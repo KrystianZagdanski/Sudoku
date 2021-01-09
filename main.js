@@ -117,5 +117,34 @@ function main()
     solveBtn.style.backgroundColor = "lime";
     funcButtonsDiv.appendChild(solveBtn);
 
+    let generateBtn = document.createElement("button");
+    generateBtn.textContent = "Generate()";
+    generateBtn.onclick = (e)=>{
+        generateBtn.textContent = "Generating...";
+        generateBtn.disabled = true;
+        setTimeout(()=>{
+            Generator.generateGame();
+            generateBtn.textContent = "generate()";
+            generateBtn.disabled = false;
+        }, 10);
+        
+    };
+    //generateBtn.style.backgroundColor = "lime";
+    funcButtonsDiv.appendChild(generateBtn);
+
+    let dificultySelect = document.createElement("select");
+    dificultySelect.id = "dificulty";
+    dificultySelect.onchange = (e)=>{Generator.dificulty = dificultySelect.value};
+    funcButtonsDiv.appendChild(dificultySelect);
+    let dificulties = ["EASY", "MEDIUM", "HARD"];
+    for(let dif = 1; dif <= 3; dif++)
+    {
+        let opt = document.createElement("option");
+        opt.value = dif;
+        opt.text = dificulties[dif-1];
+        if(dif == 1) opt.selected = true;
+        dificultySelect.appendChild(opt);
+    }
+
     requestAnimationFrame(Update);
 }

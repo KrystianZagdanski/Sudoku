@@ -111,16 +111,20 @@ Solver.findEliminatedByYWing = (aChain)=>{
  * @param {number} startIndex - index of value to start from
  * @param {Array.<PairObj>} pairs - list of pairs
  * @param {Chain} chain - current chain
- * @param {Array.<Chain>} - list of found chains
  * @returns {Array.<Chain>} [Chain,...]
  */
-Solver.findChain = (start, startIndex, pairs_, chain = new Chain(), chains = [])=>{
+Solver.findChain = (start, startIndex, pairs_, chain = new Chain())=>{
     let pairs = pairs_.slice(0);
     if(chain.first == null)
     {
         pairs.splice(pairs.indexOf(start), 1);
         chain.linkFromTO(new CandidateObj(start.cell, start.value[startIndex]), new CandidateObj(start.cell, start.value[startIndex>0?0:1]));
     }
+    if(chain.length > 31)
+    {
+        return false;
+    }
+    let incompleteChains = [];
     for(let i = 0; i < pairs.length; i++)
     {
         if(pairs[i].cell.commonHouse(chain.last.cell).length > 0)
@@ -132,11 +136,13 @@ Solver.findChain = (start, startIndex, pairs_, chain = new Chain(), chains = [])
                 chainCopy.linkTo(new CandidateObj(pairs[i].cell, pairs[i].value[1]));
                 if(chainCopy.last.value == chainCopy.first.value)
                 {
-                    chains.push(chainCopy);
+                    let elim = Solver.findEliminatedByXYChain(chainCopy);
+                    if(elim.length > 0)
+                        return [chainCopy];
                 }
                 let newPairs = pairs.slice(0);
                 newPairs.splice(i, 1);
-                Solver.findChain(start, null, newPairs, chainCopy.copy(), chains);
+                incompleteChains.push({chain: chainCopy.copy(), pairs: newPairs});
             }
             else if(pairs[i].value[1] == chain.last.value)
             {
@@ -144,16 +150,30 @@ Solver.findChain = (start, startIndex, pairs_, chain = new Chain(), chains = [])
                 chainCopy.linkTo(new CandidateObj(pairs[i].cell, pairs[i].value[1]));
                 chainCopy.linkTo(new CandidateObj(pairs[i].cell, pairs[i].value[0]));
                 if(chainCopy.last.value == chainCopy.first.value)
-                    chains.push(chainCopy);
+                {
+                    let elim = Solver.findEliminatedByXYChain(chainCopy);
+                    if(elim.length > 0)
+                        return [chainCopy];
+                }
                 let newPairs = pairs.slice(0);
                 newPairs.splice(i, 1);
-                Solver.findChain(start, null, newPairs, chainCopy.copy(), chains);
+                incompleteChains.push({chain: chainCopy.copy(), pairs: newPairs});
             }
         }
     }
-    
+    if(incompleteChains.length > 0)
+    {
+        for(let i = 0; i < incompleteChains.length; i++)
+        {
+            let ic = incompleteChains[i];
+            let c = Solver.findChain(start, null, ic.pairs, ic.chain.copy());
+            if(c) return c;
+        }
+    }
     if(startIndex != null)
-        return chains;
+        return [];
+    else
+        return false;
     
 }
 
@@ -172,11 +192,6 @@ Solver.findXYChains = (aCellArr)=>{
         {
             chains = chains.concat(Solver.findChain(pair, startIndex, pairs));
         }
-    });
-    chains.sort((c1,c2)=>{
-        if(c1.length > c2.length) return 1;
-        if(c1.length < c2.length) return -1;
-        return 0;
     });
     return chains;
 }

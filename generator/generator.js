@@ -1,6 +1,7 @@
-
 class Generator
 {
+    static dificulty = 1;
+    static dificultiesTreshold = [[0,72], [28,122], [65,2000]];
 
     /**
      * Generate solution
@@ -115,12 +116,27 @@ class Generator
     }
 
     /**
+     * Return sum of numbers in array
+     * @param {Array.<number>} arr 
+     */
+    static sum(arr)
+    {
+        let sum = 0;
+        arr.forEach(num=>{
+            sum += num;
+        });
+        return sum;
+    }
+
+    /**
      * Generate and set new game.
      * @returns {Array.<Array.<number>>} 2d array with values generated for game
      */
     static generateGame()
     {
-        let deleteCount = 55;
+        let deleteCount = 60;
+        let del = (deleteCount-(deleteCount%10))/10;
+        let tries = deleteCount/2;
         let solution = this.generateSolution();
         let game = this.deleteRandom(solution, 10);
         let tempGame = [];
@@ -132,6 +148,11 @@ class Generator
 
         while(deleteCount > 0)
         {
+            // remove some hints
+            del = (deleteCount-(deleteCount%10))/10;
+            del = del<=0?1:del;
+            tempGame = this.deleteRandom(tempGame, del);
+            // set game
             this.clear()
             for(let r = 0; r < 9; r++)
             {
@@ -141,23 +162,60 @@ class Generator
                         cell[c][r].value = tempGame[r][c];
                 }
             }
-            console.log("__________________________________________________________");
+            // test if solvable
             if(Solver.solve(true))
             {
+                // save tested game
+                tries = 10;
                 for(let i = 0; i < tempGame.length; i++)
                 {
                     game[i] = tempGame[i].slice(0);
                 }
-                deleteCount -= 1;
+                deleteCount -= del;
+                // 
+                let difScore = this.sum(Solver.dificultyScore);
+                if(deleteCount <= 11 && difScore >= this.dificultiesTreshold[this.dificulty-1][0] && difScore <= this.dificultiesTreshold[this.dificulty-1][1])
+                {
+                    deleteCount = 0;
+                }
+                else if(deleteCount-del < 0)
+                {
+                    deleteCount = 60;
+                    solution = this.generateSolution();
+                    game = this.deleteRandom(solution, 10);
+                    tempGame = [];
+                    for(let i = 0; i < game.length; i++)
+                    {
+                        tempGame[i] = game[i].slice(0);
+                    }
+                    deleteCount -= 10;
+                    tries = 10;
+                    continue;
+                }
             }
             else
             {
+                tries -= 1;
+                if(tries <= 0)
+                {
+                    deleteCount = 60;
+                    solution = this.generateSolution();
+                    game = this.deleteRandom(solution, 10);
+                    tempGame = [];
+                    for(let i = 0; i < game.length; i++)
+                    {
+                        tempGame[i] = game[i].slice(0);
+                    }
+                    deleteCount -= 10;
+                    tries = 10;
+                    continue;
+                }
                 for(let i = 0; i < game.length; i++)
                 {
                     tempGame[i] = game[i].slice(0);
                 }
+                
             }
-            tempGame = this.deleteRandom(tempGame, 1);
         }
         
         this.clear();
@@ -172,6 +230,8 @@ class Generator
         return game;
         
     }
+
+
 }
 
 //Easy: 28 32 28 32 32 32

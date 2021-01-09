@@ -8,7 +8,7 @@ class Solver
     static TRIPLE = 3;
     static QUAD = 4;
 
-    static level = 0;
+    static dificultyScore = [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0];
     static solutions = [];
     static candidatesToRemove = [];
 
@@ -73,105 +73,6 @@ class Solver
         else return hiddenSingles;
     }
 
-    /** OLD
-     * Returns list of pairs or false if didn't found any.
-     * @param  {Array.<House>} rows - Rows of sudoku.
-     * @param  {Array.<House>} columns - Columns of sudoku.
-     * @param  {Array.<House>} blocks - Blocks of sudoku.
-     * @returns {Array.<PairObj> | false} [PairObj,...] or false.
-     */
-    // static findHiddenPairs(rows, columns, blocks)
-    // {
-    //     let hiddenPairs = [];
-    //     let cells = [];
-    //     // find pairs
-    //     for(let houseIndex = 0; houseIndex < 9; houseIndex++)
-    //     {
-    //         for(let i = 0; i < 9; i++)
-    //         {
-    //             cells = rows[houseIndex].findCandidate(i+1);
-    //             if(cells.length == 2)
-    //             {
-    //                 hiddenPairs.push(new PairObj([cells[0],cells[1]], i+1));
-    //             }
-    //             cells = columns[houseIndex].findCandidate(i+1);
-    //             if(cells.length == 2)
-    //             {
-    //                 hiddenPairs.push(new PairObj([cells[0],cells[1]], i+1));
-    //             }
-    //             cells = blocks[houseIndex].findCandidate(i+1);
-    //             if(cells.length == 2)
-    //             {
-    //                 hiddenPairs.push(new PairObj([cells[0],cells[1]], i+1));
-    //             }
-    //         }
-    //     }
-    //     //remove duplicates
-    //     for(let i = 0; i < hiddenPairs.length-1; i++)
-    //     {
-    //         for(let j = i+1; j < hiddenPairs.length; )
-    //         {
-    //             if(hiddenPairs[i].cell[0] == hiddenPairs[j].cell[0] &&
-    //                 hiddenPairs[i].cell[1] == hiddenPairs[j].cell[1] &&
-    //                 hiddenPairs[i].value == hiddenPairs[j].value)
-    //             {
-    //                 hiddenPairs.splice(j,1);
-    //             }
-    //             else
-    //             {
-    //                 j++;
-    //             }
-    //         }
-    //     }
-
-    //     if(hiddenPairs.length == 0) return false;
-    //     else return hiddenPairs;
-    // }
-
-    /** OLD
-     * Returns hidden double as list of objects or false if didn't found any.
-     * @param  {Array.<House>} blocks - Blocks of sudoku.
-     * @returns {Array.<Object> | false} [{pair1: PairObj, pair2: PairObj},...] or false.
-     */
-    // static findHiddenDouble(blocks)
-    // {
-    //     let hiddenDouble = [];
-    //     blocks.forEach(house=>{
-    //         let pairs = [];
-    //         // find pairs in block
-    //         for(let digit = 1; digit <= 9; digit++)
-    //         {
-    //             let count = house.countCandidate(digit);
-    //             if(count == 2)
-    //             {
-    //                 let cells = house.findCandidate(digit);
-    //                 pairs.push(new PairObj([cells[0], cells[1]], digit));
-    //             }
-    //         }
-    //         if(pairs.length < 2) return;
-
-    //         // find pairs in the same cells and add them to hiddenDouble if there are other candidates in them
-    //         for(let i = 0; i < pairs.length-1; i++)
-    //         {
-    //             for(let j = i+1; j < pairs.length; j++)
-    //             {
-    //                 if(pairs[i].cell[0] == pairs[j].cell[0] && pairs[i].cell[1] == pairs[j].cell[1])
-    //                 {
-    //                     if(pairs[i].cell[0].candidates.length > 2 || pairs[i].cell[1].candidates.length > 2)
-    //                     {
-    //                         hiddenDouble.push({
-    //                             pair1: pairs[i],
-    //                             pair2: pairs[j]
-    //                         });
-    //                     } 
-    //                 }
-    //             }
-    //         }
-    //     });
-    //     if(hiddenDouble.length > 0) return hiddenDouble;
-    //     else return false;
-    // }
-
     /**
      * Returns list of pairs or false.
      * @param  {Array.<Array.<Cell>>} cells - Cells of sudoku.
@@ -208,35 +109,6 @@ class Solver
         if(threeDigitCells.length == 0) return false;
         else return threeDigitCells;
     }
-    
-
-    /** OLD
-     * Returns list of lists of two PairObj or false.
-     * @param  {Array.<Array.<Cell>>} cells - Cells of sudoku.
-     * @returns {Array.<Array<PairObj>> | false} [[PairObj, PairObj],...] or false.
-     */
-    // static findTwoPairs(cells)
-    // {
-    //     let twoDigitCells = Solver.findTwoDigitCells(cells);
-    //     if(!twoDigitCells) return false;
-
-    //     // find pairs with the same values and house
-    //     let pairs = [];
-    //     for(let i = 0; i < twoDigitCells.length-1; i++)
-    //     {
-    //         for(let j = i+1; j < twoDigitCells.length; j++)
-    //         {
-    //             if(twoDigitCells[i].value[0] == twoDigitCells[j].value[0] &&
-    //             twoDigitCells[i].value[1] == twoDigitCells[j].value[1] &&
-    //             twoDigitCells[i].cell.commonHouse(twoDigitCells[j].cell).length != 0)
-    //             {
-    //                 pairs.push([twoDigitCells[i], twoDigitCells[j]]);
-    //             }
-    //         }
-    //     }
-    //     if(pairs.length == 0) return false;
-    //     else return pairs;
-    // }
 
     /**
      * Returns x wings as list of objects or false.
