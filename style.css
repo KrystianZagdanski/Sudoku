@@ -59,3 +59,22 @@ button.selection
     display: flex;
     justify-content: center;
 }
+
+/* Load button */
+.upload-btn-wrapper {
+    position: relative;
+    overflow: hidden;
+    display:inline-flex;
+  }
+  
+  .btn {
+    position: relative;
+    top: 2;
+  }
+  
+  .upload-btn-wrapper input[type=file] {
+    position: absolute;
+    left: 0;
+    top: 0;
+    opacity: 0;
+  }

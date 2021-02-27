@@ -1,4 +1,44 @@
 /**
+ * Returns list of hidden single candidates of false if didn't found any.
+ * @param  {Array.<House>} rows - Rows of sudoku.
+ * @param  {Array.<House>} columns - Columns of sudoku.
+ * @param  {Array.<House>} blocks - Blocks of sudoku.
+ * @returns {Array.<CandidateObj> | false} [CandidateObj,...] or false.
+ */
+Solver.findHiddenSingle = (rows, columns, blocks)=>{
+    let hiddenSingles = [];
+    let ids = []; // list of id od cells already found
+    let cells = [];
+    for(let houseIndex = 0; houseIndex < 9; houseIndex++)
+    {
+        for(let i = 0; i < 9; i++)
+        {
+            cells = rows[houseIndex].findCandidate(i+1);
+            if(cells.length == 1 && !ids.includes(cells[0].id))
+            {
+                hiddenSingles.push(new CandidateObj(cells[0], i+1));
+                ids.push(cells[0].id);
+            }
+            cells = columns[houseIndex].findCandidate(i+1);
+            if(cells.length == 1 && !ids.includes(cells[0].id))
+            {
+                hiddenSingles.push(new CandidateObj(cells[0], i+1));
+                ids.push(cells[0].id);
+            }
+            cells = blocks[houseIndex].findCandidate(i+1);
+            if(cells.length == 1 && !ids.includes(cells[0].id))
+            {
+                hiddenSingles.push(new CandidateObj(cells[0], i+1));
+                ids.push(cells[0].id);
+            }
+        }
+    }
+
+    if(hiddenSingles.length == 0) return false;
+    else return hiddenSingles;
+}
+
+/**
  * Take House object and return list with objects containing digits and cells with hidden pairs
  * @param {House} aHouse - A House object
  * @returns {Array.<Object>} [{ digits[2], cells[2] },...]

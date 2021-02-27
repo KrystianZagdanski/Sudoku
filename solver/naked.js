@@ -14,6 +14,24 @@ Solver.findXDigitCells = (aHouse, x)=>{
 }
 
 /**
+ * Returns list of naked single candidates of false if didn't found any.
+ * @param  {Array.<Array.<Cell>>} cells - Cells of sudoku.
+ * @returns {Array.<CandidateObj> | false} [CandidateObj,...] or false.
+ */
+Solver.findNakedSingle = (cells)=>{
+    let nakedSingles = [];
+    cells.forEach(col =>{
+        col.forEach(cell =>{
+            if(cell.candidates.length == 1)
+                nakedSingles.push(new CandidateObj(cell, cell.candidates[0]));
+        });
+    });
+    
+    if(nakedSingles.length == 0) return false;
+    else return nakedSingles;
+}
+
+/**
  * Take House object and return list of cells creating pair
  * @param {House} aHouse - House object
  * @returns {Array.<Array.<Cell>>} 2d array with Cell objects

@@ -57,3 +57,21 @@ function saveGame()
 
     URL.revokeObjectURL(a.href);
 }
+
+// set curent sudoku state as new game
+function set()
+{
+    for(let i = 0; i < 9; i++)
+    {
+        for(let j = 0; j < 9; j++)
+        {
+            if(cell[i][j].value != null)
+                cell[i][j].isGiven = true;
+            cell[i][j]._candidates = [];
+        }
+    }
+    Solver.candidatesFilled = false;
+    Solver.solutions = [];
+    Solver.candidatesToRemove = [];
+    Solver.action = Solver.FIND_SOLUTION;
+}

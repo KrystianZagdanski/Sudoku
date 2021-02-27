@@ -1,3 +1,84 @@
+class Solver
+{
+    static FIND_SOLUTION = Symbol("search");
+    static SOLVE = Symbol("solve");
+    static REMOVE = Symbol("remove");
+    
+    static PAIR = 2;
+    static TRIPLE = 3;
+    static QUAD = 4;
+
+    static dificultyScore = [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0];
+    static solutions = [];
+    static candidatesToRemove = [];
+    
+
+    /**
+     * Returns list of pairs or false.
+     * @param  {Array.<Array.<Cell>>} cells - Cells of sudoku.
+     * @returns {Array.<PairObj> | flase} [PairObj,...] or false.
+     */
+    static findTwoDigitCells(cells)
+    {
+        let twoDigitCells = [];
+        cells.forEach(col =>{
+            col.forEach(cell =>{
+                if(cell.candidates.length == 2)
+                    twoDigitCells.push(new PairObj(cell, [cell.candidates[0], cell.candidates[1]]));
+            });
+        });
+        
+        if(twoDigitCells.length == 0) return false;
+        else return twoDigitCells;
+    }
+    /**
+     * Returns list of objects or false.
+     * @param  {Array.<Array.<Cell>>} cells - Cells of sudoku
+     * @returns {Array.<Object> | flase} {cell, values[]} or false.
+     */
+    static findThreeDigitCells(cells)
+    {
+        let threeDigitCells = [];
+        cells.forEach(col =>{
+            col.forEach(cell =>{
+                if(cell.candidates.length == 3)
+                    threeDigitCells.push({cell: cell, values: [cell.candidates[0], cell.candidates[1], cell.candidates[2]]});
+            });
+        });
+        
+        if(threeDigitCells.length == 0) return false;
+        else return threeDigitCells;
+    }   
+
+    /**
+     * Returns object with lists of strong links.
+     * @param  {Array.<Array.<Cell>>} cells - Cells of sudoku.
+     * @param  {Array.<House>} rows - Rows of sudoku.
+     * @param  {Array.<House>} columns - Columns of sudoku.
+     * @param  {Array.<House>} blocks - Blocks of sudoku.
+     * @returns {Object<Array.<Link>, Array.<Link>>} {LinksFromPairs: [Link,...], LinksFrom2DigitCell: [Link,...]}
+     */
+    static findAllStrongLinks(cells, rows, columns, blocks)
+    {
+        let links = {
+            LinksFromPairs: [],
+            LinksFrom2DigitCell: []
+        };
+        // create links from Pairs
+        let pairs = Solver.findHiddenPairs(rows, columns, blocks);
+        pairs.forEach(pair=>{
+            links.LinksFromPairs.push(new Link(pair.getCandidateObj(0), pair.getCandidateObj(1)));
+        });
+        // create links from Cells
+        let twoDigitCells = Solver.findTwoDigitCells(cells);
+        twoDigitCells.forEach(pair=>{
+            links.LinksFrom2DigitCell.push(new Link(pair.getCandidateObj(0), pair.getCandidateObj(1)));
+        });
+
+        return links;
+    }
+}
+
 /**
  * Solve cells with candidates from Solver.solutions.
  */
@@ -1037,7 +1118,7 @@ Solver.step = (validate = false)=>{
     }
     else
     {
-        //console.log("Solution not found!");
+        console.log("Solution not found!");
         Solver.action = Solver.FIND_SOLUTION;
     }
 
@@ -1045,7 +1126,7 @@ Solver.step = (validate = false)=>{
 }
 
 /**
- * Solve sudoku using Sudoku lovling metohods.
+ * Solve sudoku using Sudoku solving metohods.
  * @param {Boolean} - Will not use backtrack if true
  */
 Solver.solve = (validate = false)=>{

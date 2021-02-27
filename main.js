@@ -100,25 +100,27 @@ function main()
     }
 
     //save loader
-    document.getElementById("saveFile").addEventListener("change", loadSave, false);
+    let loaderBtn = document.getElementById("saveFile");
+    loaderBtn.addEventListener("change", loadSave, false);
+    loaderBtn.style.color = "transparent";
 
-    // create text function buttons
+    // create function buttons
     funcButtonsDiv = document.getElementById("funcButtonsDiv");
 
     let stepBtn = document.createElement("button");
-    stepBtn.textContent = "step()";
+    stepBtn.textContent = "Step";
     stepBtn.onclick = (e)=>{Solver.step()};
     stepBtn.style.backgroundColor = "lime";
     funcButtonsDiv.appendChild(stepBtn);
 
     let solveBtn = document.createElement("button");
-    solveBtn.textContent = "solve()";
+    solveBtn.textContent = "Solve";
     solveBtn.onclick = (e)=>{Solver.solve()};
     solveBtn.style.backgroundColor = "lime";
     funcButtonsDiv.appendChild(solveBtn);
 
     let generateBtn = document.createElement("button");
-    generateBtn.textContent = "Generate()";
+    generateBtn.textContent = "Generate";
     generateBtn.onclick = (e)=>{
         generateBtn.textContent = "Generating...";
         generateBtn.disabled = true;
@@ -129,7 +131,6 @@ function main()
         }, 10);
         
     };
-    //generateBtn.style.backgroundColor = "lime";
     funcButtonsDiv.appendChild(generateBtn);
 
     let dificultySelect = document.createElement("select");
@@ -145,6 +146,11 @@ function main()
         if(dif == 1) opt.selected = true;
         dificultySelect.appendChild(opt);
     }
+
+    let setBtn = document.createElement("button");
+    setBtn.textContent = "Set";
+    setBtn.onclick = (e)=>{set()};
+    funcButtonsDiv.appendChild(setBtn);
 
     requestAnimationFrame(Update);
 }

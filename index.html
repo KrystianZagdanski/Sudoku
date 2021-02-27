@@ -3,7 +3,7 @@
     <head>
         <meta charset="UTF-8">
         <title>Sudoku</title>
-        <script type="text/javascript" src="solver/SolverTools.js"></script>
+        <!--<script type="text/javascript" src="solver/SolverTools.js"></script>-->
         <script type="text/javascript" src="solver/Solver.js"></script>
         <script type="text/javascript" src="Structures.js"></script>
         <script type="text/javascript" src="solver/naked.js"></script>
@@ -26,7 +26,10 @@
             <div id="buttons" style="display: block; margin-left: 10px;"></div>
         </div>
         <div id="funcButtonsDiv">
-            <input type="file" id="saveFile">
+            <div class="upload-btn-wrapper">
+                <button class="btn">Load</button>
+                <input type="file" id="saveFile"/>
+            </div>
             <button onclick="saveGame()">Save</button>
         </div>
     </body>
