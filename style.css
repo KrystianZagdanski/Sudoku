@@ -42,14 +42,14 @@ body
 button.selection
 {
     display: block;
-    width: 80px;
-    height: 80px;
-    font-size: 60px;
+    width: 71.5px;
+    height: 71.5px;
+    font-size: 50px;
     font-family: Verdana;
     margin-bottom: 2px;
     background-color: gray;
     /*border-color: #222;*/
-    border: 3px inset #666 ;
+    border: 2px inset #666 ;
     border-radius: 5px;
 }
 

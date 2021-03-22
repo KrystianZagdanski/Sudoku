@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: solver/naked.js</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: solver/naked.js</h1>
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code> /**
+ * Take House object and number of digits per cell and return cells with x candidates in them
+ * @param {House} aHouse - Row, Colum or Block
+ * @param {number} x - Number of candidates per cell
+ * @returns {Array.&lt;Cell>}
+ */
+Solver.findXDigitCells = (aHouse, x)=>{
+    let XDigitCells = [];
+    aHouse.cells.forEach(cell =>{
+        if(cell.candidates.length == x)
+            XDigitCells.push(cell);
+    });
+    return XDigitCells;
+}
+
+/**
+ * Returns list of naked single candidates of false if didn't found any.
+ * @param  {Array.&lt;Array.&lt;Cell>>} cells - Cells of sudoku.
+ * @returns {Array.&lt;CandidateObj> | false} [CandidateObj,...] or false.
+ */
+Solver.findNakedSingle = (cells)=>{
+    let nakedSingles = [];
+    cells.forEach(col =>{
+        col.forEach(cell =>{
+            if(cell.candidates.length == 1)
+                nakedSingles.push(new CandidateObj(cell, cell.candidates[0]));
+        });
+    });
+    
+    if(nakedSingles.length == 0) return false;
+    else return nakedSingles;
+}
+
+/**
+ * Take House object and return list of cells creating pair
+ * @param {House} aHouse - House object
+ * @returns {Array.&lt;Array.&lt;Cell>>} 2d array with Cell objects
+ */
+Solver.findNakedPairs = (aHouse)=>{
+    let twoDigitCells = Solver.findXDigitCells(aHouse, 2);
+    let nakedPairs = [];
+    for(let i = 0; i &lt; twoDigitCells.length-1; i++)
+    {
+        for(let j = i+1; j &lt; twoDigitCells.length; j++)
+        {
+            if(twoDigitCells[i].haveSameCandidatesAs(twoDigitCells[j]))
+            {
+                nakedPairs.push([twoDigitCells[i], twoDigitCells[j]]);
+            }
+        }
+    }
+    return nakedPairs;
+}
+
+/**
+ * Take House object and return list of cells creating triple
+ * @param {House} aHouse - House object
+ * @returns {Array.&lt;Array.&lt;Cell>>} 2d array with Cell objects
+ */
+Solver.findNakedTriples = (aHouse)=>{
+    let threeDigitCells = Solver.findXDigitCells(aHouse, 3);
+    let nakedTriples = [];
+    let temp = [];
+    for(let i = 0; i &lt; threeDigitCells.length-2; i++)
+    {
+        temp = [];
+        for(let j = i+1; j &lt; threeDigitCells.length; j++)
+        {
+            if(threeDigitCells[i].haveSameCandidatesAs(threeDigitCells[j]))
+            {
+                temp.push(threeDigitCells[j]);
+            }
+            if(temp.length == 2)
+            {
+                nakedTriples.push([threeDigitCells[i], temp[0], temp[1]]);
+                break;
+            }
+        }
+    }
+    return nakedTriples;
+}
+
+/**
+ * Take House object and return list of cells creating quad
+ * @param {House} aHouse - House object
+ * @returns {Array.&lt;Array.&lt;Cell>>} 2d array with Cell objects
+ */
+Solver.findNakedQuads = (aHouse)=>{
+    let fourDigitCells = Solver.findXDigitCells(aHouse, 4);
+    let nakedQuads = [];
+    let temp = [];
+    for(let i = 0; i &lt; fourDigitCells.length-3; i++)
+    {
+        temp = [];
+        for(let j = i+1; j &lt; fourDigitCells.length; j++)
+        {
+            if(fourDigitCells[i].haveSameCandidatesAs(fourDigitCells[j]))
+            {
+                temp.push(fourDigitCells[j]);
+            }
+            if(temp.length == 3)
+            {
+                nakedQuads.push([fourDigitCells[i], temp[0], temp[1], temp[2]]);
+                break;
+            }
+        }
+    }
+    return nakedQuads;
+}
+
+/**
+ * Take list of House objects and return object with naked pairs, triples and quads
+ * @param {Array.&lt;House>} aHouseArr - List of House objects
+ * @returns {Object.&lt;Array.&lt;Array>>} {pairs[cells[2],...], triples[cells[3],...], quads[cells[4],...]}
+ */
+Solver.findNaked = (aHouseArr)=>{
+    let naked = {
+        pairs: [],
+        triples: [],
+        quads: []
+    };
+    let temp;
+    for(let i = 0; i &lt; aHouseArr.length; i++)
+    {
+        temp = Solver.findNakedPairs(aHouseArr[i]);
+        if(temp.length > 0)
+            naked.pairs = naked.pairs.concat(temp);
+        temp = Solver.findNakedTriples(aHouseArr[i]);
+        if(temp.length > 0)
+            naked.triples = naked.triples.concat(temp);
+        temp = Solver.findNakedQuads(aHouseArr[i]);
+        if(temp.length > 0)
+            naked.quads = naked.quads.concat(temp);
+    }
+    return naked;
+}
+
+/**
+ * Take cells of multiple and house of multiple and return list of candidates to eliminate
+ * @param {Array.&lt;Cell>} nakedCells - Multiple of cells
+ * @param {House} aHouse - A House object of a multiple
+ * @returns {Array.&lt;CandidateObj>} [CandidateObj, ...]
+ */
+Solver.findEliminatedByNaked = (nakedCells, aHouse)=>{
+    let candidatesForElimination = [];
+    let nakedCandidates = nakedCells[0].candidates;
+    aHouse.cells.forEach(cell=>{
+        for(let i = 0; i &lt; nakedCells.length; i++)
+        {
+            if(cell == nakedCells[i])
+                return;
+        }
+        for(let i = 0; i &lt; nakedCandidates.length; i++)
+        {
+            if(cell.candidates.includes(nakedCandidates[i]))
+            {
+                candidatesForElimination.push(new CandidateObj(cell, nakedCandidates[i]));
+            }
+        }
+    });
+    return candidatesForElimination;
+}</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="Board.html">Board</a></li><li><a href="CandidateObj.html">CandidateObj</a></li><li><a href="Cell.html">Cell</a></li><li><a href="Chain.html">Chain</a></li><li><a href="Fish.html">Fish</a></li><li><a href="House.html">House</a></li><li><a href="Link.html">Link</a></li><li><a href="PairObj.html">PairObj</a></li><li><a href="XWing.html">XWing</a></li></ul><h3>Global</h3><ul><li><a href="global.html#main">main</a></li><li><a href="global.html#Update">Update</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 3.6.6</a> on Mon Mar 01 2021 15:32:11 GMT+0100 (Środkowoeuropejski czas stand.)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>

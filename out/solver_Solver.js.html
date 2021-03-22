@@ -1,9 +1,36 @@
-class Solver
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: solver/Solver.js</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: solver/Solver.js</h1>
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>class Solver
 {
     static FIND_SOLUTION = Symbol("search");
     static SOLVE = Symbol("solve");
     static REMOVE = Symbol("remove");
-    static action = Solver.FIND_SOLUTION;
     
     static PAIR = 2;
     static TRIPLE = 3;
@@ -16,8 +43,8 @@ class Solver
 
     /**
      * Returns list of pairs or false.
-     * @param  {Array.<Array.<Cell>>} cells - Cells of sudoku.
-     * @returns {Array.<PairObj> | flase} [PairObj,...] or false.
+     * @param  {Array.&lt;Array.&lt;Cell>>} cells - Cells of sudoku.
+     * @returns {Array.&lt;PairObj> | flase} [PairObj,...] or false.
      */
     static findTwoDigitCells(cells)
     {
@@ -34,8 +61,8 @@ class Solver
     }
     /**
      * Returns list of objects or false.
-     * @param  {Array.<Array.<Cell>>} cells - Cells of sudoku
-     * @returns {Array.<Object> | flase} {cell, values[]} or false.
+     * @param  {Array.&lt;Array.&lt;Cell>>} cells - Cells of sudoku
+     * @returns {Array.&lt;Object> | flase} {cell, values[]} or false.
      */
     static findThreeDigitCells(cells)
     {
@@ -53,11 +80,11 @@ class Solver
 
     /**
      * Returns object with lists of strong links.
-     * @param  {Array.<Array.<Cell>>} cells - Cells of sudoku.
-     * @param  {Array.<House>} rows - Rows of sudoku.
-     * @param  {Array.<House>} columns - Columns of sudoku.
-     * @param  {Array.<House>} blocks - Blocks of sudoku.
-     * @returns {Object<Array.<Link>, Array.<Link>>} {LinksFromPairs: [Link,...], LinksFrom2DigitCell: [Link,...]}
+     * @param  {Array.&lt;Array.&lt;Cell>>} cells - Cells of sudoku.
+     * @param  {Array.&lt;House>} rows - Rows of sudoku.
+     * @param  {Array.&lt;House>} columns - Columns of sudoku.
+     * @param  {Array.&lt;House>} blocks - Blocks of sudoku.
+     * @returns {Object&lt;Array.&lt;Link>, Array.&lt;Link>>} {LinksFromPairs: [Link,...], LinksFrom2DigitCell: [Link,...]}
      */
     static findAllStrongLinks(cells, rows, columns, blocks)
     {
@@ -101,13 +128,13 @@ Solver.removeCandidates = ()=>{
 
 /**
  * Fill all posible candidates in every cell.
- * @param  {Array.<Array.<Cell>>} cells - Cells of sudoku.
+ * @param  {Array.&lt;Array.&lt;Cell>>} cells - Cells of sudoku.
  */
 Solver.fillAllCandidates = (cells)=>{
     cells.forEach(col =>{
         col.forEach(cell =>{
             if(cell.value) return;
-            for(let d = 1; d <= 9; d++)
+            for(let d = 1; d &lt;= 9; d++)
             {
                 if(cell.row.valueInHouse(d)) continue;
                 if(cell.column.valueInHouse(d)) continue;
@@ -128,6 +155,7 @@ Solver.showNakedSingles = ()=>{
     {
         nakedSingles.forEach(obj=>{board.addHighlight(obj);});
         Solver.solutions = nakedSingles;
+        //console.log("Naked Single");
         Solver.dificultyScore[0] += 1;
         return Solver.SOLVE;
     }
@@ -166,7 +194,7 @@ Solver.showNakedPairs = (showAll = false)=>{
         if(naked.pairs.length > 0)
         {
             naked.pairs.forEach(pair=>{
-                if(foundElimination && !showAll)
+                if(foundElimination &amp;&amp; !showAll)
                     return;
                 Solver.candidatesToRemove = Solver.candidatesToRemove.concat(Solver.findEliminatedByNaked(pair, pair[0][houseType]));
                 if(Solver.candidatesToRemove.length > 0)
@@ -182,7 +210,7 @@ Solver.showNakedPairs = (showAll = false)=>{
                 }
             });  
         }
-        if(foundElimination && !showAll)
+        if(foundElimination &amp;&amp; !showAll)
             break;
     }
     if(Solver.candidatesToRemove.length > 0)
@@ -210,7 +238,7 @@ Solver.showHiddenPairs = (showAll = false)=>{
         if(hidden.pairs.length > 0)
         {
             hidden.pairs.forEach(pair=>{
-                if(foundElimination && !showAll)
+                if(foundElimination &amp;&amp; !showAll)
                     return;
                 Solver.candidatesToRemove = Solver.candidatesToRemove.concat(Solver.findEliminatedByHidden(pair));
                 if(Solver.candidatesToRemove.length > 0)
@@ -226,7 +254,7 @@ Solver.showHiddenPairs = (showAll = false)=>{
                 }
             });  
         }
-        if(foundElimination && !showAll)
+        if(foundElimination &amp;&amp; !showAll)
             break;
     }
     if(Solver.candidatesToRemove.length > 0)
@@ -252,14 +280,14 @@ Solver.showBoxLine = (showAll = false)=>{
     if(boxLinesRow.length > 0)
     {
         boxLinesRow.forEach(line=>{
-            if(Solver.candidatesToRemove.length > 0 && !showAll)
+            if(Solver.candidatesToRemove.length > 0 &amp;&amp; !showAll)
                 return;
             let cond;
             line[0].cell.block.cells.forEach(blockCell=>{
                 if(line.length == 2)
-                    cond = blockCell.candidates.includes(line[0].value) && blockCell != line[0].cell && blockCell != line[1].cell;
+                    cond = blockCell.candidates.includes(line[0].value) &amp;&amp; blockCell != line[0].cell &amp;&amp; blockCell != line[1].cell;
                 else
-                    cond = blockCell.candidates.includes(line[0].value) && blockCell != line[0].cell && blockCell != line[1].cell && blockCell != line[2].cell;
+                    cond = blockCell.candidates.includes(line[0].value) &amp;&amp; blockCell != line[0].cell &amp;&amp; blockCell != line[1].cell &amp;&amp; blockCell != line[2].cell;
 
                 if(cond)
                 {
@@ -270,9 +298,9 @@ Solver.showBoxLine = (showAll = false)=>{
             });
             line[0].cell.row.cells.forEach(rowCell=>{
                 if(line.length == 2)
-                    cond = rowCell != line[0].cell && rowCell != line[1].cell;
+                    cond = rowCell != line[0].cell &amp;&amp; rowCell != line[1].cell;
                 else
-                    cond = rowCell != line[0].cell && rowCell != line[1].cell && rowCell != line[2].cell;
+                    cond = rowCell != line[0].cell &amp;&amp; rowCell != line[1].cell &amp;&amp; rowCell != line[2].cell;
                 
                 let cObj = new CandidateObj(rowCell, line[0].value);
                 if(cond)
@@ -290,14 +318,14 @@ Solver.showBoxLine = (showAll = false)=>{
     if(boxLinesColumn.length > 0)
     {
         boxLinesColumn.forEach(line=>{
-            if(Solver.candidatesToRemove.length > 0 && !showAll)
+            if(Solver.candidatesToRemove.length > 0 &amp;&amp; !showAll)
                 return;
             let cond;
             line[0].cell.block.cells.forEach(blockCell=>{
                 if(line.length == 2)
-                    cond = blockCell.candidates.includes(line[0].value) && blockCell != line[0].cell && blockCell != line[1].cell;
+                    cond = blockCell.candidates.includes(line[0].value) &amp;&amp; blockCell != line[0].cell &amp;&amp; blockCell != line[1].cell;
                 else
-                    cond = blockCell.candidates.includes(line[0].value) && blockCell != line[0].cell && blockCell != line[1].cell && blockCell != line[2].cell;
+                    cond = blockCell.candidates.includes(line[0].value) &amp;&amp; blockCell != line[0].cell &amp;&amp; blockCell != line[1].cell &amp;&amp; blockCell != line[2].cell;
 
                 if(cond)
                 {
@@ -308,9 +336,9 @@ Solver.showBoxLine = (showAll = false)=>{
             });
             line[0].cell.column.cells.forEach(columnCell=>{
                 if(line.length == 2)
-                    cond = columnCell != line[0].cell && columnCell != line[1].cell;
+                    cond = columnCell != line[0].cell &amp;&amp; columnCell != line[1].cell;
                 else
-                    cond = columnCell != line[0].cell && columnCell != line[1].cell && columnCell != line[2].cell;
+                    cond = columnCell != line[0].cell &amp;&amp; columnCell != line[1].cell &amp;&amp; columnCell != line[2].cell;
                 
                 let cObj = new CandidateObj(columnCell, line[0].value);
                 if(cond)
@@ -328,7 +356,7 @@ Solver.showBoxLine = (showAll = false)=>{
     if(pointingLinesBlock.length > 0)
     {
         pointingLinesBlock.forEach(line=>{
-            if(Solver.candidatesToRemove.length > 0 && !showAll)
+            if(Solver.candidatesToRemove.length > 0 &amp;&amp; !showAll)
                 return;
             let lineHouse;
             if(line[0].cell.commonHouse(line[1].cell).includes("row"))
@@ -338,9 +366,9 @@ Solver.showBoxLine = (showAll = false)=>{
             let cond;
             lineHouse.cells.forEach(houseCell=>{
                 if(line.length == 2)
-                    cond = houseCell.candidates.includes(line[0].value) && houseCell != line[0].cell && houseCell != line[1].cell;
+                    cond = houseCell.candidates.includes(line[0].value) &amp;&amp; houseCell != line[0].cell &amp;&amp; houseCell != line[1].cell;
                 else
-                    cond = houseCell.candidates.includes(line[0].value) && houseCell != line[0].cell && houseCell != line[1].cell && houseCell != line[2].cell;
+                    cond = houseCell.candidates.includes(line[0].value) &amp;&amp; houseCell != line[0].cell &amp;&amp; houseCell != line[1].cell &amp;&amp; houseCell != line[2].cell;
 
                 if(cond)
                 {
@@ -351,9 +379,9 @@ Solver.showBoxLine = (showAll = false)=>{
             });
             line[0].cell.block.cells.forEach(blockCell=>{
                 if(line.length == 2)
-                    cond = blockCell != line[0].cell && blockCell != line[1].cell;
+                    cond = blockCell != line[0].cell &amp;&amp; blockCell != line[1].cell;
                 else
-                    cond = blockCell != line[0].cell && blockCell != line[1].cell && blockCell != line[2].cell;
+                    cond = blockCell != line[0].cell &amp;&amp; blockCell != line[1].cell &amp;&amp; blockCell != line[2].cell;
                 
                 let cObj = new CandidateObj(blockCell, line[0].value);
                 if(cond)
@@ -393,7 +421,7 @@ Solver.showNakedTriples = (showAll = false)=>{
         if(naked.triples.length > 0)
         {
             naked.triples.forEach(triple=>{
-                if(foundElimination && !showAll)
+                if(foundElimination &amp;&amp; !showAll)
                     return;
                 Solver.candidatesToRemove = Solver.candidatesToRemove.concat(Solver.findEliminatedByNaked(triple, triple[0][houseType]));
                 if(Solver.candidatesToRemove.length > 0)
@@ -410,7 +438,7 @@ Solver.showNakedTriples = (showAll = false)=>{
                 }
             });  
         }
-        if(foundElimination && !showAll)
+        if(foundElimination &amp;&amp; !showAll)
             break;
     }
     if(Solver.candidatesToRemove.length > 0)
@@ -438,12 +466,12 @@ Solver.showHiddenTriples = (showAll = false)=>{
         if(hidden.triples.length > 0)
         {
             hidden.triples.forEach(triple=>{
-                if(foundElimination && !showAll)
+                if(foundElimination &amp;&amp; !showAll)
                     return;
                 Solver.candidatesToRemove = Solver.candidatesToRemove.concat(Solver.findEliminatedByHidden(triple));
                 if(Solver.candidatesToRemove.length > 0)
                 {
-                    for(let i = 0; i < triple.cells.length; i++)
+                    for(let i = 0; i &lt; triple.cells.length; i++)
                     {
                         board.addHighlight(new CandidateObj(triple.cells[i], triple.digits[0]));
                         board.addHighlight(new CandidateObj(triple.cells[i], triple.digits[1]));
@@ -456,7 +484,7 @@ Solver.showHiddenTriples = (showAll = false)=>{
                 }
             });  
         }
-        if(foundElimination && !showAll)
+        if(foundElimination &amp;&amp; !showAll)
             break;
     }
     if(Solver.candidatesToRemove.length > 0)
@@ -484,7 +512,7 @@ Solver.showNakedQuad = (showAll = false)=>{
         if(naked.quads.length > 0)
         {
             naked.quads.forEach(quad=>{
-                if(foundElimination && !showAll)
+                if(foundElimination &amp;&amp; !showAll)
                     return;
                 Solver.candidatesToRemove = Solver.candidatesToRemove.concat(Solver.findEliminatedByNaked(quad, quad[0][houseType]));
                 if(Solver.candidatesToRemove.length > 0)
@@ -502,7 +530,7 @@ Solver.showNakedQuad = (showAll = false)=>{
                 }
             });  
         }
-        if(foundElimination && !showAll)
+        if(foundElimination &amp;&amp; !showAll)
             break;
     }
     if(Solver.candidatesToRemove.length > 0)
@@ -524,7 +552,7 @@ Solver.showYWing = (showAll = false)=>{
     Solver.candidatesToRemove = [];
     let YWingChains = Solver.findYWing(cell);
     YWingChains.forEach(YWing =>{
-        if(Solver.candidatesToRemove.length > 0 && !showAll)
+        if(Solver.candidatesToRemove.length > 0 &amp;&amp; !showAll)
             return;
 
         let elim = Solver.findEliminatedByYWing(YWing);
@@ -572,14 +600,14 @@ Solver.showXWing = ()=>{
             xWing.cells[1].column.countCandidate(xWingCandidate) > 2)
             {
                 properXWingFound = true;
-                for(let i = 0; i < 2; i++)
+                for(let i = 0; i &lt; 2; i++)
                 {
                     xWing.cells[i].column.cells.forEach(cell=>{
                         let hlGreen = false;
                         let c = new CandidateObj(cell, xWingCandidate);
                         if(cell.candidates.includes(xWingCandidate))
                         {
-                            if(cell != xWing.cells[i] && cell != xWing.cells[i+2])
+                            if(cell != xWing.cells[i] &amp;&amp; cell != xWing.cells[i+2])
                             {
                                 board.addHighlight(c, Board.COLOR.RED);
                                 Solver.candidatesToRemove.push(c);
@@ -614,14 +642,14 @@ Solver.showXWing = ()=>{
             xWing.cells[1].row.countCandidate(xWingCandidate) > 2)
             {
                 properXWingFound = true;
-                for(let i = 0; i < 2; i++)
+                for(let i = 0; i &lt; 2; i++)
                 {
                     xWing.cells[i].row.cells.forEach(cell=>{
                         let hlGreen = false;
                         let c = new CandidateObj(cell, xWingCandidate);
                         if(cell.candidates.includes(xWingCandidate))
                         {
-                            if(cell != xWing.cells[i] && cell != xWing.cells[i+2])
+                            if(cell != xWing.cells[i] &amp;&amp; cell != xWing.cells[i+2])
                             {
                                 board.addHighlight(c, Board.COLOR.RED);
                                 Solver.candidatesToRemove.push(c);
@@ -671,7 +699,7 @@ Solver.showSwordfish = (showAll = false)=>{
     let swordFishesColumns = Solver.findSwordfish(column);
 
     swordfishesRows.forEach(fish=>{
-        if(Solver.candidatesToRemove.length > 0 && !showAll)
+        if(Solver.candidatesToRemove.length > 0 &amp;&amp; !showAll)
             return;
         let elim = Solver.findEliminatedByFish(fish);
         if(elim.length == 0)
@@ -699,9 +727,9 @@ Solver.showSwordfish = (showAll = false)=>{
 
         fish.eliminationHouses.forEach(house=>{
             house.cells.forEach(cell=>{
-                if(!fish.cells.includes(cell) && !coloredHouses.includes(cell[fish.houseType]))
+                if(!fish.cells.includes(cell) &amp;&amp; !coloredHouses.includes(cell[fish.houseType]))
                     board.addCellHighlight(new CandidateObj(cell, fish.value), Board.COLOR.RED);
-                if(cell.candidates.includes(fish.value) && !coloredHouses.includes(cell[fish.houseType]))
+                if(cell.candidates.includes(fish.value) &amp;&amp; !coloredHouses.includes(cell[fish.houseType]))
                 {
                     board.addHighlight(new CandidateObj(cell, fish.value), Board.COLOR.RED);
                 }
@@ -712,7 +740,7 @@ Solver.showSwordfish = (showAll = false)=>{
     });
 
     swordFishesColumns.forEach(fish=>{
-        if(Solver.candidatesToRemove.length > 0 && !showAll)
+        if(Solver.candidatesToRemove.length > 0 &amp;&amp; !showAll)
             return;
         let elim = Solver.findEliminatedByFish(fish);
         if(elim.length == 0)
@@ -740,9 +768,9 @@ Solver.showSwordfish = (showAll = false)=>{
 
         fish.eliminationHouses.forEach(house=>{
             house.cells.forEach(cell=>{
-                if(!fish.cells.includes(cell) && !coloredHouses.includes(cell[fish.houseType]))
+                if(!fish.cells.includes(cell) &amp;&amp; !coloredHouses.includes(cell[fish.houseType]))
                     board.addCellHighlight(new CandidateObj(cell, fish.value), Board.COLOR.RED);
-                if(cell.candidates.includes(fish.value) && !coloredHouses.includes(cell[fish.houseType]))
+                if(cell.candidates.includes(fish.value) &amp;&amp; !coloredHouses.includes(cell[fish.houseType]))
                 {
                     board.addHighlight(new CandidateObj(cell, fish.value), Board.COLOR.RED);
                 }
@@ -772,7 +800,7 @@ Solver.showJellyfish = (showAll = false)=>{
     let jellyFishesColumns = Solver.findJellyfish(column);
 
     jellyfishesRows.forEach(fish=>{
-        if(Solver.candidatesToRemove.length > 0 && !showAll)
+        if(Solver.candidatesToRemove.length > 0 &amp;&amp; !showAll)
             return;
         let elim = Solver.findEliminatedByFish(fish);
         if(elim.length == 0)
@@ -800,9 +828,9 @@ Solver.showJellyfish = (showAll = false)=>{
 
         fish.eliminationHouses.forEach(house=>{
             house.cells.forEach(cell=>{
-                if(!fish.cells.includes(cell) && !coloredHouses.includes(cell[fish.houseType]))
+                if(!fish.cells.includes(cell) &amp;&amp; !coloredHouses.includes(cell[fish.houseType]))
                     board.addCellHighlight(new CandidateObj(cell, fish.value), Board.COLOR.RED);
-                if(cell.candidates.includes(fish.value) && !coloredHouses.includes(cell[fish.houseType]))
+                if(cell.candidates.includes(fish.value) &amp;&amp; !coloredHouses.includes(cell[fish.houseType]))
                 {
                     board.addHighlight(new CandidateObj(cell, fish.value), Board.COLOR.RED);
                 }
@@ -813,7 +841,7 @@ Solver.showJellyfish = (showAll = false)=>{
     });
 
     jellyFishesColumns.forEach(fish=>{
-        if(Solver.candidatesToRemove.length > 0 && !showAll)
+        if(Solver.candidatesToRemove.length > 0 &amp;&amp; !showAll)
             return;
         let elim = Solver.findEliminatedByFish(fish);
         if(elim.length == 0)
@@ -841,9 +869,9 @@ Solver.showJellyfish = (showAll = false)=>{
 
         fish.eliminationHouses.forEach(house=>{
             house.cells.forEach(cell=>{
-                if(!fish.cells.includes(cell) && !coloredHouses.includes(cell[fish.houseType]))
+                if(!fish.cells.includes(cell) &amp;&amp; !coloredHouses.includes(cell[fish.houseType]))
                     board.addCellHighlight(new CandidateObj(cell, fish.value), Board.COLOR.RED);
-                if(cell.candidates.includes(fish.value) && !coloredHouses.includes(cell[fish.houseType]))
+                if(cell.candidates.includes(fish.value) &amp;&amp; !coloredHouses.includes(cell[fish.houseType]))
                 {
                     board.addHighlight(new CandidateObj(cell, fish.value), Board.COLOR.RED);
                 }
@@ -876,13 +904,13 @@ Solver.showFinnedXWing = ()=>{
     foundFinnedXWing.forEach(fXWing=>{
         if(properFinnedXWingFound) return;
 
-        for(let pi = 0; pi < 2; pi++)
+        for(let pi = 0; pi &lt; 2; pi++)
         {
             if(fXWing.cells[pi+2].commonHouse(fXWing.fins[0]).includes("block"))
             {
                 let func = (cell)=>{
-                    if(cell.commonHouse(fXWing.cells[pi+2]).includes("block") && cell.candidates.includes(fXWing.value) &&
-                     cell != fXWing.cells[pi+2] && cell != fXWing.cells[pi])
+                    if(cell.commonHouse(fXWing.cells[pi+2]).includes("block") &amp;&amp; cell.candidates.includes(fXWing.value) &amp;&amp;
+                     cell != fXWing.cells[pi+2] &amp;&amp; cell != fXWing.cells[pi])
                         {
                             properFinnedXWingFound = true;
                             let c = new CandidateObj(cell, fXWing.value);
@@ -948,7 +976,7 @@ Solver.showSashimiXWing = ()=>{
         xwing.emptyCell.block.cells.forEach(cell=>{
             if(!cell.candidates.includes(xwing.value)) return;
 
-            if(!xwing.fins.includes(cell) && !xwing.cells.includes(cell) && cell.commonHouse(xwing.emptyCell).includes(eliminateIn))
+            if(!xwing.fins.includes(cell) &amp;&amp; !xwing.cells.includes(cell) &amp;&amp; cell.commonHouse(xwing.emptyCell).includes(eliminateIn))
             {
                 foundXwing = true;
                 let c = new CandidateObj(cell, xwing.value);
@@ -995,7 +1023,7 @@ Solver.showXYChain = (showAll = false)=>{
     Solver.candidatesToRemove = [];
     let XYChains = Solver.findXYChains(cell);
     XYChains.forEach(chain =>{
-        if(Solver.candidatesToRemove.length > 0 && !showAll)
+        if(Solver.candidatesToRemove.length > 0 &amp;&amp; !showAll)
             return;
 
         let elim = Solver.findEliminatedByXYChain(chain);
@@ -1054,6 +1082,11 @@ Solver.step = (validate = false)=>{
         Solver.fillAllCandidates(cell);
         Solver.candidatesFilled = true;
         return true;
+    }
+    
+    if(Solver.action == undefined)
+    {
+        Solver.action = Solver.FIND_SOLUTION;
     }
 
     if(Solver.action == Solver.FIND_SOLUTION)
@@ -1136,3 +1169,26 @@ Solver.solve = (validate = false)=>{
     });
     return solved;
 }
+</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="Board.html">Board</a></li><li><a href="CandidateObj.html">CandidateObj</a></li><li><a href="Cell.html">Cell</a></li><li><a href="Chain.html">Chain</a></li><li><a href="Fish.html">Fish</a></li><li><a href="House.html">House</a></li><li><a href="Link.html">Link</a></li><li><a href="PairObj.html">PairObj</a></li><li><a href="XWing.html">XWing</a></li></ul><h3>Global</h3><ul><li><a href="global.html#main">main</a></li><li><a href="global.html#Update">Update</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 3.6.6</a> on Mon Mar 01 2021 15:32:11 GMT+0100 (Środkowoeuropejski czas stand.)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>

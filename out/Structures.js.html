@@ -69,6 +69,22 @@ class Cell
     }
 
     /**
+     * Return copy of this cell
+     * @returns {Cell}
+     */
+    copy()
+    {
+        let newCell = new Cell(this.id);
+        newCell.value = this.value;
+        newCell.isGiven = this.isGiven;
+        newCell.row = this.row;
+        newCell.column = this.column;
+        newCell.block = this.block;
+        newCell._candidates = this._candidates.slice(0);
+        return newCell;
+    }
+
+    /**
      * Take Cell and returns true if it have the same candidates.
      * @param {Cell} Cell - Cell objesct.
      * @returns {true | false} true|false
@@ -106,6 +122,7 @@ class Cell
         {
             this._candidates.push(candidates);
         }
+        this._candidates.sort((a,b)=>{return a-b;});
     }
 
     /**
@@ -164,6 +181,23 @@ class Cell
         if(this.column == aCell.column) type.push("column");
         if(this.block == aCell.block) type.push("block");
         return type;
+    }
+
+    /**
+     * Returns list of common candidates.
+     * @param  {Cell} aCell - Cell to compare to.
+     * @returns {Array.&lt;number>} [digit, ...].
+     */
+    commonCandidates(aCell)
+    {
+        let candidates = [];
+        this.candidates.forEach(digitA=>{
+            aCell.candidates.forEach(digitB=>{
+                if(digitA == digitB)
+                    candidates.push(digitA);
+            });
+        });
+        return candidates;
     }
 }
 
@@ -405,6 +439,47 @@ class XWing
 }
 
 /**
+ * Represents Fish
+ * @class
+ * @property {number} value - Candidate digit.
+ * @property {Array.&lt;Cell>} cells - Cells of Fish.
+ * @property {"row" | "column"} houseType - Common house type of cells.
+ * @property {Array.&lt;Cell>} fins - Finn Cells of Fish.
+ * @property {Cell} emptyCell - Cell without candidate.
+ */
+class Fish
+{
+    /**
+     * @param  {number} value - Candidate digit.
+     * @param  {Array.&lt;Cell>} cells - Cells of Fish.
+     * @param  {"row" | "column"} houseType - Common house type of cells.
+     * @param  {Array.&lt;House>} eliminationHouses - List of houses where fish can eliminate candidates.
+     * @param  {Array.&lt;Cell>} [fins] - Finn Cells of Fish.
+     * @param  {Cell} [emptyCell] - Cell without candidate.
+     * @constructor
+     */
+    constructor(value, cells, houseType, eliminationHouses, fins, emptyCell)
+    {
+        this.value = value;
+        this.cells = cells;
+        this.houseType = houseType;
+        this.eliminationHouses = eliminationHouses;
+        this.fins = fins || [];
+        this.emptyCell = emptyCell || false;
+    }
+
+    /**
+     * Returns cell of a Fish as CandidateObj.
+     * @param  {number} index - Index of Cell.
+     * @returns {CandidateObj} - CandidateObj
+     */
+    getCandidateObj(index)
+    {
+        return new CandidateObj(this.cells[index], this.value);
+    }
+}
+
+/**
  * Pair of two linked CandidateObj.
  * @class
  * @property {CandidateObj} digitA - Start of a link.
@@ -500,6 +575,44 @@ class Chain
     }
 
     /**
+     * Returns length of a chain
+     * @readonly
+     */
+    get length()
+    {
+        return this.links.length;
+    }
+
+    /**
+     * Returns copy of itself.
+     * @returns {Chain} Chain
+     */
+    copy()
+    {
+        let chainCopy = new Chain();
+        chainCopy.first = this.first;
+        chainCopy.last = this.last;
+        chainCopy.links = this.links.slice(0);
+        chainCopy._complete = this._complete;
+        chainCopy._strongLinkNext = this._strongLinkNext;
+        return chainCopy;
+    }
+
+    /**
+     * Returns true if cell is part of this chain.
+     * @param {Cell} aCell - Cell you want ot search for.
+     * @returns {Boolean} true | flase
+     */
+    isPartOfChain(aCell)
+    {
+        for(let i = 0; i &lt; this.links.length; i++)
+        {
+            if(aCell == this.links[i].digitA.cell || aCell == this.links[i].digitB.cell)
+                return true;
+        }
+        return false;
+    }
+    /**
      * Returns true if given Link can be the next link in this Chain.
      * @param  {Link} aLink - Link to check.
      * @returns {Boolean} true or false.
@@ -591,13 +704,13 @@ class Chain
 </div>
 
 <nav>
-    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="CandidateObj.html">CandidateObj</a></li><li><a href="Cell.html">Cell</a></li><li><a href="Chain.html">Chain</a></li><li><a href="House.html">House</a></li><li><a href="Link.html">Link</a></li><li><a href="PairObj.html">PairObj</a></li><li><a href="XWing.html">XWing</a></li></ul>
+    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="Board.html">Board</a></li><li><a href="CandidateObj.html">CandidateObj</a></li><li><a href="Cell.html">Cell</a></li><li><a href="Chain.html">Chain</a></li><li><a href="Fish.html">Fish</a></li><li><a href="House.html">House</a></li><li><a href="Link.html">Link</a></li><li><a href="PairObj.html">PairObj</a></li><li><a href="XWing.html">XWing</a></li></ul><h3>Global</h3><ul><li><a href="global.html#main">main</a></li><li><a href="global.html#Update">Update</a></li></ul>
 </nav>
 
 <br class="clear">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 3.6.6</a> on Fri Dec 18 2020 19:46:37 GMT+0100 (Środkowoeuropejski czas stand.)
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 3.6.6</a> on Mon Mar 01 2021 15:32:11 GMT+0100 (Środkowoeuropejski czas stand.)
 </footer>
 
 <script> prettyPrint(); </script>

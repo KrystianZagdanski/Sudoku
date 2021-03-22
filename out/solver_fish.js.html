@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: solver/fish.js</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: solver/fish.js</h1>
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>/**
+ * Take 2d list of candidates for Fish and returns list of id's.
+ * @param {Array.&lt;Cell>} aCellArr- List of cells. 
+ * @param {"row" | "column"} fishOpositType - Oposite house to the house of fish.
+ * @returns {Array.&lt;number>} [houseId,...]
+ */
+Solver.getFishEliminationHouses = (aCellArr, fishOpositType)=>{
+    let lines = [];
+
+    aCellArr.forEach(cell=>{
+        if(!lines.includes(cell[fishOpositType]))
+            lines.push(cell[fishOpositType]);
+    });
+    return lines;
+}
+
+/**
+ * Take list of House objects and return list of Fish objects.
+ * @param {Array.&lt;House>} aHouseArr - Rows or columns
+ * @returns {Array.&lt;Fish>} [Fish,...] 
+ */
+Solver.findSwordfish = (aHouseArr)=>{
+    let swordFishes = [];
+    let fishCells = [[],[],[],[],[],[],[],[],[]];
+    let type = aHouseArr[0].type;
+    let opositType = type == "row"? "column": "row";
+
+    aHouseArr.forEach(house => {
+        for(let digit = 1; digit &lt;= 9; digit++)
+        {
+            let cells = house.findCandidate(digit);
+            if(cells.length > 0 &amp;&amp; cells.length &lt;=3)
+                fishCells[digit-1].push(cells);
+        }
+    });
+
+    for(let digit = 1; digit &lt;= 9; digit++)
+    {
+        let digitCells = fishCells[digit-1];
+        if(digitCells.length &lt; 3)
+            continue;
+        
+        for(let i = 0; i &lt; digitCells.length-2; i++)
+        {
+            for(let j = i+1; j &lt; digitCells.length-1; j++)
+            {
+                for(let k = j+1; k &lt; digitCells.length; k++)
+                {
+                    let cells = digitCells[i].concat(digitCells[j],digitCells[k]);
+                    let elimHouses = Solver.getFishEliminationHouses(cells, opositType);
+                    if(elimHouses.length == 3)
+                    {
+                        swordFishes.push(new Fish(digit, cells, type, elimHouses));
+                    }
+                }
+            }
+        }
+    }
+
+    return swordFishes;
+};
+
+/**
+ * Take list of House objects and return list of Fish objects.
+ * @param {Array.&lt;House>} aHouseArr - Rows or columns
+ * @returns {Array.&lt;Fish>} [Fish,...] 
+ */
+Solver.findJellyfish = (aHouseArr)=>{
+    let jellyFishes = [];
+    let fishCells = [[],[],[],[],[],[],[],[],[]];
+    let type = aHouseArr[0].type;
+    let opositType = type == "row"? "column": "row";
+
+    aHouseArr.forEach(house => {
+        for(let digit = 1; digit &lt;= 9; digit++)
+        {
+            let cells = house.findCandidate(digit);
+            if(cells.length > 0 &amp;&amp; cells.length &lt;=4)
+                fishCells[digit-1].push(cells);
+        }
+    });
+
+    for(let digit = 1; digit &lt;= 9; digit++)
+    {
+        let digitCells = fishCells[digit-1];
+        if(digitCells.length &lt; 4)
+            continue;
+        
+        for(let i = 0; i &lt; digitCells.length-2; i++)
+        {
+            for(let j = i+1; j &lt; digitCells.length-1; j++)
+            {
+                for(let k = j+1; k &lt; digitCells.length; k++)
+                {
+                    for(let l = k+1; l &lt; digitCells.length; l++)
+                    {
+                        let cells = digitCells[i].concat(digitCells[j],digitCells[k],digitCells[l]);
+                        let elimHouses = Solver.getFishEliminationHouses(cells, opositType);
+                        if(elimHouses.length == 4)
+                        {
+                            jellyFishes.push(new Fish(digit, cells, type, elimHouses));
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    return jellyFishes;
+};
+
+/**
+ * Takes Fish and return list of candidates that can be eliminated by it.
+ * @param {Fish} aFish - A Fish object
+ * @returns {Array.&lt;CandidateObj>} [CandidateObj, ...] 
+ */
+Solver.findEliminatedByFish = (aFish)=>{
+    let candidatesForElimination = [];
+    aFish.eliminationHouses.forEach(house=>{
+        house.cells.forEach(cell=>{
+            if(!aFish.cells.includes(cell) &amp;&amp; cell.candidates.includes(aFish.value))
+                candidatesForElimination.push(new CandidateObj(cell, aFish.value));
+        });
+    });
+
+    return candidatesForElimination;
+}</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="Board.html">Board</a></li><li><a href="CandidateObj.html">CandidateObj</a></li><li><a href="Cell.html">Cell</a></li><li><a href="Chain.html">Chain</a></li><li><a href="Fish.html">Fish</a></li><li><a href="House.html">House</a></li><li><a href="Link.html">Link</a></li><li><a href="PairObj.html">PairObj</a></li><li><a href="XWing.html">XWing</a></li></ul><h3>Global</h3><ul><li><a href="global.html#main">main</a></li><li><a href="global.html#Update">Update</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 3.6.6</a> on Mon Mar 01 2021 15:32:11 GMT+0100 (Środkowoeuropejski czas stand.)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>

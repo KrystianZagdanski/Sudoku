@@ -36,8 +36,8 @@ class Cell
     {
         if(this.value)
             return [];
-        else
-            return this._candidates;
+
+        return this._candidates;
     }
 
     /**
@@ -61,14 +61,14 @@ class Cell
      * @param {Cell} Cell - Cell objesct.
      * @returns {true | false} true|false
      */
-    haveSameCandidatesAs(Cell)
+    haveSameCandidatesAs(aCell)
     {
-        if(this.candidates.length != Cell.candidates.length)
+        if(this.candidates.length != aCell.candidates.length)
             return false;
         
         for(let i = 0; i < this.candidates.length; i++)
         {
-            if(this.candidates[i] != Cell.candidates[i])
+            if(this.candidates[i] != aCell.candidates[i])
                 return false;
         }
 
@@ -213,7 +213,7 @@ class House
         }
         else
         {
-            console.error("You cna have only 9 cells in a House");
+            console.error("You can have only 9 cells in a House");
         }
     }
 
